@@ -24,8 +24,7 @@ export const registerUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role,
-        token: generateToken(user._id)
+        role: user.role
       })
     } else {
       res.status(400).json({ message: 'Invalid user data' })
@@ -59,10 +58,10 @@ export const loginUser = async (req, res) => {
 }
 
 // @desc    Get user profile
-// @route   GET /api/users/profile/:id
+// @route   GET /api/users/profile
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
+    const user = await User.findById(req.user.id)
       .populate('followers', 'name avatar')
       .populate('following', 'name avatar')
     if (user) {
@@ -76,10 +75,10 @@ export const getUserProfile = async (req, res) => {
 }
 
 // @desc    Update user profile
-// @route   PUT /api/users/profile/:id
+// @route   PUT /api/users/profile
 export const updateUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
+    const user = await User.findById(req.user.id)
 
     if (user) {
       user.name = req.body.name || user.name
@@ -111,7 +110,7 @@ export const getUsers = async (req, res) => {
     if (location) query.location = { $regex: location, $options: 'i' }
     if (skill) query.skills = { $in: [skill] }
 
-    const users = await User.find(query).select('-password')
+    const users = await User.find(query)
     res.json(users)
   } catch (error) {
     res.status(500).json({ message: error.message })

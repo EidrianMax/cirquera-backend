@@ -48,4 +48,11 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password)
 }
 
+userSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret.__v
+    delete ret.password
+  }
+})
+
 export default mongoose.model('User', userSchema)

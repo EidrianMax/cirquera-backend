@@ -1,18 +1,57 @@
+### TALENT
 POST http://localhost:3000/api/users/register
 Content-Type: application/json
 
 {
   "role": "talent",
-  "name": "Adrian",
-  "email": "adrian@mail.com",
+  "name": "Paco",
+  "email": "paco@mail.com",
   "password": "password"
 }
 
-###
+### Login user
 POST http://localhost:3000/api/users/login
 Content-Type: application/json
 
 {
-  "email": "adrian@mail.com",
+  "email": "paco@mail.com",
   "password": "password"
 }
+
+### Get user
+GET http://localhost:3000/api/users/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YjIwMDM2ZTFlMDczYzYyODJjYmM3OSIsImlhdCI6MTc3MzI3NjExMywiZXhwIjoxNzc1ODY4MTEzfQ.EwQ5k2CHxTD87YiUGHR9nXBEY3uRFgkcjeNl2q4qyYM
+
+### Update user
+PUT http://localhost:3000/api/users/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YjIwMDM2ZTFlMDczYzYyODJjYmM3OSIsImlhdCI6MTc3MzI3NjExMywiZXhwIjoxNzc1ODY4MTEzfQ.EwQ5k2CHxTD87YiUGHR9nXBEY3uRFgkcjeNl2q4qyYM
+Content-Type: application/json
+
+{
+  "password": "Paco1"
+}
+
+
+### ADMIN
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "role": "admin",
+  "name": "Julio",
+  "email": "julio@mail.com",
+  "password": "password"
+}
+
+### Login user
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+
+{
+  "email": "julio@mail.com",
+  "password": "password"
+}
+
+### Get all users *admin*
+GET http://localhost:3000/api/users?role=admin
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YjIwOTczN2IyNGJlYTVhNGQzMzQyOCIsImlhdCI6MTc3MzI3NTYxMywiZXhwIjoxNzc1ODY3NjEzfQ.SbEk9rIi0fF8kKFCrLdKCqJnfo7jounxeD_2v9eaGFM
