@@ -10,9 +10,9 @@ POST http://{{apiUrl}}/register
 Content-Type: application/json
 
 {
-  "role": "talent",
-  "name": "adri1",
-  "email": "adri1@mail.com",
+  "role": "admin",
+  "name": "adri",
+  "email": "adri@mail.com",
   "password": "password"
 }
 
@@ -26,18 +26,6 @@ Content-Type: application/json
   "password": "password"
 }
 
-### getProfile
-# @name getProfile
-GET http://{{apiUrl}}/profile
+### Get all users with 'admin' role
+GET http://{{apiUrl}}?role=admin
 Authorization: Bearer {{token}}
-
-### updateProfile
-# @name updateProfile
-PUT http://{{apiUrl}}/profile
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-  "password": "Paco1",
-  "name": "Pepe"
-}

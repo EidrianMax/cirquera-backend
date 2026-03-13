@@ -5,16 +5,31 @@ import generateToken from '../utils/generateToken.js'
 // @route   POST /api/users/register
 export const registerUser = async (req, res) => {
   try {
-    const { role, name, email, password } = req.body
+    const { role, name, surname, email, password } = req.body
+
+    // support spanish keys as fallback
+    const nationality = req.body.nationality || req.body.nacionalidad
+    const phone = req.body.phone || req.body.telefono
+    const gender = req.body.gender || req.body.genero
+    const dateOfBirth = req.body.dateOfBirth || req.body.data_naixement || req.body.dob
+    const bio = req.body.bio || req.body.info || req.body.extraInfo
 
     const userExists = await User.findOne({ email })
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' })
     }
 
+    const fullName = surname ? `${name} ${surname}` : name
+
     const user = await User.create({
       role,
-      name,
+      name: fullName,
+      surname,
+      nationality,
+      phone,
+      gender,
+      dateOfBirth,
+      bio,
       email,
       password
     })
@@ -24,7 +39,8 @@ export const registerUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        token: generateToken(user._id)
       })
     } else {
       res.status(400).json({ message: 'Invalid user data' })
@@ -85,6 +101,11 @@ export const updateUserProfile = async (req, res) => {
       user.avatar = req.body.avatar || user.avatar
       user.location = req.body.location || user.location
       user.bio = req.body.bio || user.bio
+      user.surname = req.body.surname || user.surname
+      user.nationality = req.body.nationality || req.body.nacionalidad || user.nationality
+      user.phone = req.body.phone || req.body.telefono || user.phone
+      user.gender = req.body.gender || req.body.genero || user.gender
+      user.dateOfBirth = req.body.dateOfBirth || user.dateOfBirth
       user.skills = req.body.skills || user.skills
       user.experience = req.body.experience || user.experience
       user.portfolio = req.body.portfolio || user.portfolio
