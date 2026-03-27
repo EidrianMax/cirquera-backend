@@ -1,7 +1,6 @@
 import Job from '../models/Job.js'
+import Application from '../models/Application.js'
 
-// @desc    Create a new job
-// @route   POST /api/jobs
 export const createJob = async (req, res) => {
   try {
     const { title, description, location, contractType, skillsRequired, company } = req.body
@@ -21,8 +20,6 @@ export const createJob = async (req, res) => {
   }
 }
 
-// @desc    Get all jobs (with filters)
-// @route   GET /api/jobs
 export const getJobs = async (req, res) => {
   try {
     const { location, contractType, skill } = req.query
@@ -33,14 +30,26 @@ export const getJobs = async (req, res) => {
     if (skill) query.skillsRequired = { $in: [skill] }
 
     const jobs = await Job.find(query).populate('company', 'name avatar')
-    res.json(jobs)
+
+    const applications = await Application.find({ talent: req.user.id })
+
+    const appMap = {}
+    applications.forEach(app => {
+      appMap[app.job.toString()] = app.status
+    })
+
+    const jobsWithStatus = jobs.map(job => {
+      const jobObj = job.toObject()
+      jobObj.applicationStatus = appMap[job._id] || null
+      return jobObj
+    })
+
+    res.json(jobsWithStatus)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
 
-// @desc    Get job by ID
-// @route   GET /api/jobs/:id
 export const getJobById = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id).populate('company', 'name avatar location bio')
@@ -54,8 +63,6 @@ export const getJobById = async (req, res) => {
   }
 }
 
-// @desc    Update a job
-// @route   PUT /api/jobs/:id
 export const updateJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id)
@@ -78,8 +85,6 @@ export const updateJob = async (req, res) => {
   }
 }
 
-// @desc    Delete a job
-// @route   DELETE /api/jobs/:id
 export const deleteJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id)
