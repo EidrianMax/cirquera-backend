@@ -11,6 +11,8 @@ services:
       - .:/usr/src/app
     working_dir: /usr/src/app
     command: bash -c "npm install && npm run dev"
+    networks:
+      - cirquera-net
 
   db:
     image: mongo:6-jammy
@@ -22,6 +24,12 @@ services:
       - "27017:27017"
     volumes:
       - mongodata:/data/db
+    networks:
+      - cirquera-net
 
 volumes:
   mongodata:
+
+networks:
+  cirquera-net:
+    external: true

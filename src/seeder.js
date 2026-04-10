@@ -4,15 +4,32 @@ import User from './models/User.js'
 import Job from './models/Job.js'
 import Post from './models/Post.js'
 import Application from './models/Application.js'
+import bcrypt from 'bcryptjs'
 
 dotenv.config()
 
 const users = [
   {
+    role: 'admin',
+    name: 'Albert',
+    email: 'albert@cirquera.com',
+    password: await bcrypt.hash('admin123', 10),
+    location: 'Barcelona',
+    bio: 'Administrador de la plataforma.',
+  },
+  {
+    role: 'admin',
+    name: 'Victor',
+    email: 'victor@cirquera.com',
+    password: await bcrypt.hash('admin123', 10),
+    location: 'Barcelona',
+    bio: 'Administrador de la plataforma.',
+  },
+  {
     role: 'talent',
     name: 'Joan Artist',
     email: 'joan@example.com',
-    password: 'password123',
+    password: await bcrypt.hash('password123', 10),
     location: 'Barcelona',
     bio: 'Malabarista professional amb 5 anys d\'experiència.',
     skills: ['Malabars', 'Equilibrisme', 'Acrobàcia']
@@ -21,7 +38,7 @@ const users = [
     role: 'company',
     name: 'Circ de l\'Est',
     email: 'est@circ.com',
-    password: 'password123',
+    password: await bcrypt.hash('password123', 10),
     location: 'Girona',
     bio: 'Companyia de circ contemporani.',
     skills: ['Producció', 'Gestió']
@@ -30,7 +47,7 @@ const users = [
     role: 'talent',
     name: 'Maria Aèria',
     email: 'maria@example.com',
-    password: 'password123',
+    password: await bcrypt.hash('password123', 10),
     location: 'Valencia',
     bio: 'Especialista en teles aèries i trapezi.',
     skills: ['Teles', 'Trapezi']
@@ -46,9 +63,9 @@ const importData = async () => {
 
     const createdUsers = await User.insertMany(users)
 
-    const companyUser = createdUsers[1]._id
-    const talentUser1 = createdUsers[0]._id
-    const talentUser2 = createdUsers[2]._id
+    const companyUser = createdUsers[3]._id
+    const talentUser1 = createdUsers[2]._id
+    const talentUser2 = createdUsers[4]._id
 
     const sampleJobs = [
       {
