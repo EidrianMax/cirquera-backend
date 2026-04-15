@@ -31,6 +31,8 @@ app.use(express.json())
 // Static folder
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
+app.get('/api', (req, res) => res.send('API is running... 🚀'))
+
 // Routes
 app.use('/api/users', userRoutes)
 app.use('/api/jobs', jobRoutes)
@@ -47,6 +49,8 @@ app.use(errorHandler)
 const PORT = process.env.PORT || 3000
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cirquera'
+
+
 
 mongoose.connect(MONGO_URI)
   .then(async () => {
