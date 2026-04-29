@@ -9,6 +9,29 @@ Content-Type: application/json
   "password": "password"
 }
 
+### TALENT
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "role": "talent",
+  "name": "Paco3",
+  "email": "paco3@mail.com",
+  "password": "password"
+}
+
+
+### Empresa
+POST http://localhost:3000/api/users/register
+Content-Type: application/json
+
+{
+  "role": "company",
+  "name": "Paco2",
+  "email": "paco2@mail.com",
+  "password": "password"
+}
+
 ### Login user
 POST http://localhost:3000/api/users/login
 Content-Type: application/json
