@@ -11,4 +11,6 @@ const applicationSchema = new mongoose.Schema({
   message: String
 }, { timestamps: true })
 
+applicationSchema.index({ job: 1, talent: 1 }, { unique: true })
+
 export default mongoose.model('Application', applicationSchema)
