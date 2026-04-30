@@ -55,27 +55,29 @@ export const getJobs = async (req, res) => {
     const jobs = await Job.find(query)
       .populate('company', 'name avatar')
 
-    // 🔥 SOLO lo necesario
-    const applications = await Application.find({
-      talent: req.user.id
-    }).select('job status')
+    return res.json(jobs)
 
-    const appMap = {}
+    // 🔥 Saber si el usuario ha aplicado a cada trabajo
+    // const applications = await Application.find({
+    //   talent: req.user.id
+    // }).select('job status')
 
-    applications.forEach(app => {
-      appMap[app.job.toString()] = app.status
-    })
+    // const appMap = {}
 
-    const jobsWithStatus = jobs.map(job => {
-      const jobObj = job.toObject()
+    // applications.forEach(app => {
+    //   appMap[app.job.toString()] = app.status
+    // })
 
-      return {
-        ...jobObj,
-        applicationStatus: appMap[job._id.toString()] || null
-      }
-    })
+    // const jobsWithStatus = jobs.map(job => {
+    //   const jobObj = job.toObject()
 
-    res.json(jobsWithStatus)
+    //   return {
+    //     ...jobObj,
+    //     applicationStatus: appMap[job._id.toString()] || null
+    //   }
+    // })
+
+    // res.json(jobsWithStatus)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -100,7 +102,7 @@ export const getJobById = async (req, res) => {
 }
 
 /**
- * UPDATE JOB (solo owner)
+ * UPDATE JOB
  */
 export const updateJob = async (req, res) => {
   try {
@@ -110,22 +112,15 @@ export const updateJob = async (req, res) => {
       return res.status(404).json({ message: 'Job not found' })
     }
 
-    // 🔥 Seguridad: solo el owner puede editar
     if (job.company.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' })
     }
 
-    job.title = req.body.title || job.title
-    job.description = req.body.description || job.description
-    job.location = req.body.location || job.location
-    job.contractType = req.body.contractType || job.contractType
-    job.skillsRequired = req.body.skillsRequired || job.skillsRequired
-    job.isActive =
-      req.body.isActive !== undefined
-        ? req.body.isActive
-        : job.isActive
-
-    const updatedJob = await job.save()
+    const updatedJob = await Job.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { returnDocument: 'after', runValidators: true }
+    )
 
     res.json(updatedJob)
   } catch (error) {
@@ -138,21 +133,17 @@ export const updateJob = async (req, res) => {
  */
 export const deleteJob = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.id)
+    const job = await Job.findOneAndDelete({
+      _id: req.params.id,
+      company: req.user.id
+    })
 
     if (!job) {
       return res.status(404).json({ message: 'Job not found' })
     }
 
-    // 🔥 Seguridad: solo el owner
-    if (job.company.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorized' })
-    }
-
-    await job.deleteOne()
-
-    res.json({ message: 'Job removed' })
+    return res.json({ message: 'Job removed' })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
