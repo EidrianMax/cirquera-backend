@@ -15,7 +15,7 @@ const users = [
     email: 'albert@cirquera.com',
     password: await bcrypt.hash('admin123', 10),
     location: 'Barcelona',
-    bio: 'Administrador de la plataforma.',
+    bio: 'Administrador de la plataforma.'
   },
   {
     role: 'admin',
@@ -23,7 +23,7 @@ const users = [
     email: 'victor@cirquera.com',
     password: await bcrypt.hash('admin123', 10),
     location: 'Barcelona',
-    bio: 'Administrador de la plataforma.',
+    bio: 'Administrador de la plataforma.'
   },
   {
     role: 'talent',

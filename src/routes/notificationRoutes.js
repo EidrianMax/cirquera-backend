@@ -3,10 +3,11 @@ import {
   getNotifications,
   markAsRead
 } from '../controllers/NotificationController.js'
+import { protect } from '../middleware/authMiddleware.js'
 
 const router = express.Router()
 
-router.get('/:userId', getNotifications)
-router.put('/:id/read', markAsRead)
+router.get('/:userId', protect, getNotifications)
+router.put('/:id/read', protect, markAsRead)
 
 export default router

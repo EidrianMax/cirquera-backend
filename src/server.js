@@ -14,6 +14,7 @@ import followRoutes from './routes/followRoutes.js'
 import chatRoutes from './routes/chatRoutes.js'
 import notificationRoutes from './routes/notificationRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 import seedData from './utils/seedData.js'
 
@@ -42,6 +43,7 @@ app.use('/api/follows', followRoutes)
 app.use('/api/chats', chatRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/upload', uploadRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.use(notFound)
 app.use(errorHandler)
@@ -49,15 +51,21 @@ app.use(errorHandler)
 const PORT = process.env.PORT || 3000
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cirquera'
-
-
+const shouldSeedOnBoot = process.env.SEED_ON_BOOT === 'true'
 
 mongoose.connect(MONGO_URI)
   .then(async () => {
     console.log('Connected to MongoDB')
-    await seedData()
+
+    if (shouldSeedOnBoot) {
+      await seedData()
+    }
+
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`)
     })
   })
-  .catch((error) => console.log(`${error} did not connect`))
+  .catch((error) => {
+    console.error(`${error} did not connect`)
+    process.exit(1)
+  })

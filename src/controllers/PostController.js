@@ -1,21 +1,36 @@
 import Post from '../models/Post.js'
 import { createNotification } from './NotificationController.js'
 
+const normalizeMedia = (media) => {
+  if (!Array.isArray(media)) {
+    return []
+  }
+
+  return media.filter(item => item && typeof item.url === 'string' && typeof item.type === 'string')
+}
+
+const canManagePost = (post, user) => user.role === 'admin' || post.author.toString() === user.id
+
 // @desc    Create a new post
 // @route   POST /api/posts
 export const createPost = async (req, res) => {
   try {
-    const { author, content, media } = req.body
+    const content = typeof req.body.content === 'string' ? req.body.content.trim() : ''
+    const media = normalizeMedia(req.body.media)
+
+    if (!content) {
+      return res.status(422).json({ message: 'Post content is required' })
+    }
 
     const post = await Post.create({
-      author,
+      author: req.user.id,
       content,
       media
     })
 
-    res.status(201).json(post)
+    return res.status(201).json(post)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
 
@@ -24,11 +39,12 @@ export const createPost = async (req, res) => {
 export const getPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-      .populate('author', 'name avatar')
+      .populate('author', 'name avatar role')
       .sort({ createdAt: -1 })
-    res.json(posts)
+
+    return res.json(posts)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
 
@@ -37,15 +53,16 @@ export const getPosts = async (req, res) => {
 export const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'name avatar')
-      .populate('comments.user', 'name avatar')
-    if (post) {
-      res.json(post)
-    } else {
-      res.status(404).json({ message: 'Post not found' })
+      .populate('author', 'name avatar role')
+      .populate('comments.user', 'name avatar role')
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' })
     }
+
+    return res.json(post)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
 
@@ -54,10 +71,13 @@ export const getPostById = async (req, res) => {
 export const likePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-    if (!post) return res.status(404).json({ message: 'Post not found' })
 
-    const userId = req.body.userId
-    const alreadyLiked = post.likes.includes(userId)
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' })
+    }
+
+    const userId = req.user.id
+    const alreadyLiked = post.likes.some(id => id.toString() === userId)
 
     if (alreadyLiked) {
       post.likes = post.likes.filter(id => id.toString() !== userId)
@@ -67,7 +87,7 @@ export const likePost = async (req, res) => {
 
     await post.save()
 
-    if (!alreadyLiked) {
+    if (!alreadyLiked && post.author.toString() !== userId) {
       await createNotification({
         user: post.author,
         type: 'newLike',
@@ -76,9 +96,9 @@ export const likePost = async (req, res) => {
       })
     }
 
-    res.json(post)
+    return res.json(post)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
 
@@ -87,24 +107,35 @@ export const likePost = async (req, res) => {
 export const addComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-    if (!post) return res.status(404).json({ message: 'Post not found' })
 
-    const { user, comment } = req.body
-    const newComment = { user, comment }
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' })
+    }
 
-    post.comments.push(newComment)
+    const comment = typeof req.body.comment === 'string' ? req.body.comment.trim() : ''
+
+    if (!comment) {
+      return res.status(422).json({ message: 'Comment is required' })
+    }
+
+    post.comments.push({
+      user: req.user.id,
+      comment
+    })
     await post.save()
 
-    await createNotification({
-      user: post.author,
-      type: 'newComment',
-      fromUser: user,
-      relatedPost: post._id
-    })
+    if (post.author.toString() !== req.user.id) {
+      await createNotification({
+        user: post.author,
+        type: 'newComment',
+        fromUser: req.user.id,
+        relatedPost: post._id
+      })
+    }
 
-    res.status(201).json(post)
+    return res.status(201).json(post)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
 
@@ -113,13 +144,18 @@ export const addComment = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-    if (post) {
-      await post.deleteOne()
-      res.json({ message: 'Post removed' })
-    } else {
-      res.status(404).json({ message: 'Post not found' })
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' })
     }
+
+    if (!canManagePost(post, req.user)) {
+      return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    await post.deleteOne()
+    return res.json({ message: 'Post removed' })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }

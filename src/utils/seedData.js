@@ -1,7 +1,6 @@
 import User from '../models/User.js'
 import Job from '../models/Job.js'
 import Post from '../models/Post.js'
-import Application from '../models/Application.js'
 
 const seedData = async () => {
   try {
@@ -43,7 +42,7 @@ const seedData = async () => {
       }
     ]
 
-    const createdUsers = await User.insertMany(users)
+    const createdUsers = await User.create(users)
 
     const companyUser = createdUsers[1]._id
     const talentUser1 = createdUsers[0]._id

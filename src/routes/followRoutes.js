@@ -5,12 +5,13 @@ import {
   unfollowUser,
   getFollows
 } from '../controllers/FollowController.js'
+import { protect } from '../middleware/authMiddleware.js'
 
 const router = express.Router()
 
-router.post('/', followUser)
-router.put('/:id/accept', acceptFollowRequest)
-router.delete('/:id', unfollowUser)
+router.post('/', protect, followUser)
+router.put('/:id/accept', protect, acceptFollowRequest)
+router.delete('/:id', protect, unfollowUser)
 router.get('/:userId', getFollows)
 
 export default router

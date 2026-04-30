@@ -4,7 +4,8 @@ import {
   loginUser,
   getUserProfile,
   updateUserProfile,
-  getUsers
+  getUsers,
+  getUsersForChat
 } from '../controllers/UserController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
@@ -13,7 +14,7 @@ const router = express.Router()
 router.post('/register', registerUser)
 router.post('/login', loginUser)
 router.get('/', protect, admin, getUsers)
-router.get('/getUsersForChat', protect, getUsers)
+router.get('/getUsersForChat', protect, getUsersForChat)
 router.get('/profile', protect, getUserProfile)
 router.put('/profile', protect, updateUserProfile)
 

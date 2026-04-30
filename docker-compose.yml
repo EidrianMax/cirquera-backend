@@ -5,12 +5,16 @@ services:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://admin:password@db:27017/cirquera?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-change-this-local-dev-secret}
+      - SEED_ON_BOOT=${SEED_ON_BOOT:-false}
+      - NODE_ENV=${NODE_ENV:-development}
     depends_on:
       - db
     volumes:
       - .:/usr/src/app
+      - backend_node_modules:/usr/src/app/node_modules
     working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
+    command: npm run dev
     networks:
       - cirquera-net
 
@@ -29,6 +33,7 @@ services:
 
 volumes:
   mongodata:
+  backend_node_modules:
 
 networks:
   cirquera-net:

@@ -10,6 +10,11 @@ const jobSchema = new mongoose.Schema({
   },
   skillsRequired: [{ type: String }],
   company: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  status: {
+    type: String,
+    enum: ['active', 'rejected', 'closed', 'deleted'],
+    default: 'active'
+  },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true })
 

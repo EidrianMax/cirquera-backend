@@ -2,23 +2,35 @@ import Follow from '../models/Follow.js'
 import User from '../models/User.js'
 import { createNotification } from './NotificationController.js'
 
+const canManageFollow = (follow, user) => (
+  user.role === 'admin' ||
+  follow.follower.toString() === user.id ||
+  follow.following.toString() === user.id
+)
+
 // @desc    Follow a user
 // @route   POST /api/follows
 export const followUser = async (req, res) => {
   try {
-    const { follower, following } = req.body
+    const follower = req.user.id
+    const following = req.body.following
 
-    // Verificar si ya existe el seguimiento
-    const existingFollow = await Follow.findOne({ follower, following })
-    if (existingFollow) {
-      return res.status(400).json({ message: 'Already following or request pending' })
+    if (!following) {
+      return res.status(422).json({ message: 'Target user is required' })
+    }
+
+    if (follower === following) {
+      return res.status(422).json({ message: 'You cannot follow yourself' })
     }
 
     const targetUser = await User.findById(following)
     if (!targetUser) return res.status(404).json({ message: 'User not found' })
 
-    // Si es una compañía, el seguimiento es automático, si es talento puede requerir aprobación
-    // Pero basándonos en el requerimiento "Talent necesita aprobar seguidores; Company no"
+    const existingFollow = await Follow.findOne({ follower, following })
+    if (existingFollow) {
+      return res.status(409).json({ message: 'Already following or request pending' })
+    }
+
     const followStatus = targetUser.role === 'company' ? 'accepted' : 'pending'
 
     const follow = await Follow.create({
@@ -38,9 +50,13 @@ export const followUser = async (req, res) => {
       fromUser: follower
     })
 
-    res.status(201).json(follow)
+    return res.status(201).json(follow)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'Already following or request pending' })
+    }
+
+    return res.status(500).json({ message: error.message })
   }
 }
 
@@ -51,15 +67,19 @@ export const acceptFollowRequest = async (req, res) => {
     const follow = await Follow.findById(req.params.id)
     if (!follow) return res.status(404).json({ message: 'Follow request not found' })
 
+    if (req.user.role !== 'admin' && follow.following.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized' })
+    }
+
     follow.status = 'accepted'
     await follow.save()
 
     await User.findByIdAndUpdate(follow.following, { $addToSet: { followers: follow.follower } })
     await User.findByIdAndUpdate(follow.follower, { $addToSet: { following: follow.following } })
 
-    res.json(follow)
+    return res.json(follow)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
 
@@ -68,18 +88,23 @@ export const acceptFollowRequest = async (req, res) => {
 export const unfollowUser = async (req, res) => {
   try {
     const follow = await Follow.findById(req.params.id)
-    if (follow) {
-      if (follow.status === 'accepted') {
-        await User.findByIdAndUpdate(follow.following, { $pull: { followers: follow.follower } })
-        await User.findByIdAndUpdate(follow.follower, { $pull: { following: follow.following } })
-      }
-      await follow.deleteOne()
-      res.json({ message: 'Unfollowed successfully' })
-    } else {
-      res.status(404).json({ message: 'Follow record not found' })
+    if (!follow) {
+      return res.status(404).json({ message: 'Follow record not found' })
     }
+
+    if (!canManageFollow(follow, req.user)) {
+      return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    if (follow.status === 'accepted') {
+      await User.findByIdAndUpdate(follow.following, { $pull: { followers: follow.follower } })
+      await User.findByIdAndUpdate(follow.follower, { $pull: { following: follow.following } })
+    }
+
+    await follow.deleteOne()
+    return res.json({ message: 'Unfollowed successfully' })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
 
@@ -88,17 +113,17 @@ export const unfollowUser = async (req, res) => {
 export const getFollows = async (req, res) => {
   try {
     const { userId } = req.params
-    const { type } = req.query // 'followers' or 'following'
+    const { type } = req.query
 
     let result
     if (type === 'followers') {
-      result = await Follow.find({ following: userId, status: 'accepted' }).populate('follower', 'name avatar bio')
+      result = await Follow.find({ following: userId, status: 'accepted' }).populate('follower', 'name avatar bio role')
     } else {
-      result = await Follow.find({ follower: userId, status: 'accepted' }).populate('following', 'name avatar bio')
+      result = await Follow.find({ follower: userId, status: 'accepted' }).populate('following', 'name avatar bio role')
     }
 
-    res.json(result)
+    return res.json(result)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
