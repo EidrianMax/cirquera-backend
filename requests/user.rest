@@ -1,5 +1,7 @@
-### TALENT
-POST http://localhost:3000/api/users/register
+@BASE_URL = http://localhost:3000/api
+
+### REGISTER A TALENT
+POST {{BASE_URL}}/users/register
 Content-Type: application/json
 
 {
@@ -9,31 +11,9 @@ Content-Type: application/json
   "password": "password"
 }
 
-### TALENT
-POST http://localhost:3000/api/users/register
-Content-Type: application/json
-
-{
-  "role": "talent",
-  "name": "Paco3",
-  "email": "paco3@mail.com",
-  "password": "password"
-}
-
-
-### Empresa
-POST http://localhost:3000/api/users/register
-Content-Type: application/json
-
-{
-  "role": "company",
-  "name": "Paco2",
-  "email": "paco2@mail.com",
-  "password": "password"
-}
-
-### Login user
-POST http://localhost:3000/api/users/login
+### LOGIN A TALENT
+# @name loginTalent
+POST {{BASE_URL}}/users/login
 Content-Type: application/json
 
 {
@@ -41,22 +21,22 @@ Content-Type: application/json
   "password": "password"
 }
 
-### Get user
-GET http://localhost:3000/api/users/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YjIwMDM2ZTFlMDczYzYyODJjYmM3OSIsImlhdCI6MTc3MzI3NjExMywiZXhwIjoxNzc1ODY4MTEzfQ.EwQ5k2CHxTD87YiUGHR9nXBEY3uRFgkcjeNl2q4qyYM
+### GET USER
+GET {{BASE_URL}}/users/profile
+Authorization: Bearer {{loginTalent.response.body.token}
 
-### Update user
-PUT http://localhost:3000/api/users/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YjIwMDM2ZTFlMDczYzYyODJjYmM3OSIsImlhdCI6MTc3MzI3NjExMywiZXhwIjoxNzc1ODY4MTEzfQ.EwQ5k2CHxTD87YiUGHR9nXBEY3uRFgkcjeNl2q4qyYM
+### UPDATE USER
+PUT {{BASE_URL}}/users/profile
+Authorization: Bearer {{loginTalent.response.body.token}
 Content-Type: application/json
 
 {
   "password": "Paco1"
 }
 
-
-### ADMIN
-POST http://localhost:3000/api/users/register
+### REGISTER AN ADMIN
+# @name registerAdmin
+POST {{BASE_URL}}/users/register
 Content-Type: application/json
 
 {
@@ -66,15 +46,24 @@ Content-Type: application/json
   "password": "password"
 }
 
-### Login user
-POST http://localhost:3000/api/users/login
+### LOGIN AN ADMIN
+# @name loginAdmin
+POST {{BASE_URL}}/users/login
 Content-Type: application/json
 
 {
-  "email": "julio@mail.com",
+  "email": "{{registerAdmin.response.body.email}}",
   "password": "password"
 }
 
-### Get all users *admin*
-GET http://localhost:3000/api/users?role=admin
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YjIwOTczN2IyNGJlYTVhNGQzMzQyOCIsImlhdCI6MTc3MzI3NTYxMywiZXhwIjoxNzc1ODY3NjEzfQ.SbEk9rIi0fF8kKFCrLdKCqJnfo7jounxeD_2v9eaGFM
+### GET ALL USERS *ADMIN*
+GET {{BASE_URL}}/users?role=admin
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### GET ALL USERS BY LOCATION *ADMIN*
+GET {{BASE_URL}}/users?role=admin&location=barcelona
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### GET ALL USERS BY SKILL *ADMIN*
+GET {{BASE_URL}}/users?role=admin&skill=malabars
+Authorization: Bearer {{loginAdmin.response.body.token}}

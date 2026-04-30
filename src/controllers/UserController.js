@@ -99,20 +99,29 @@ export const updateUserProfile = async (req, res) => {
   }
 }
 
-// @desc    Get all users (with filters)
+// @desc    Get users with filters
 // @route   GET /api/users
 export const getUsers = async (req, res) => {
   try {
-    const { role, skill, location } = req.query
-    const query = {}
+    const { skill, location } = req.query
 
-    if (role) query.role = role
-    if (location) query.location = { $regex: location, $options: 'i' }
-    if (skill) query.skills = { $in: [skill] }
+    const filters = {
+      ...(location && {
+        location: { $regex: location, $options: 'i' }
+      }),
+      ...(skill && {
+        skills: {
+          $in: [new RegExp(`^${skill}$`, 'i')]
+        }
+      })
+    }
 
-    const users = await User.find(query)
-    res.json(users)
+    const users = await User.find(filters)
+      .select('-password -__v')
+      .lean()
+
+    return res.json(users)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    return res.status(500).json({ message: error.message })
   }
 }
