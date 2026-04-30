@@ -13,6 +13,7 @@ const router = express.Router()
 router.post('/register', registerUser)
 router.post('/login', loginUser)
 router.get('/', protect, admin, getUsers)
+router.get('/getUsersForChat', protect, getUsers)
 router.get('/profile', protect, getUserProfile)
 router.put('/profile', protect, updateUserProfile)
 
