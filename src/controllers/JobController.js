@@ -55,27 +55,29 @@ export const getJobs = async (req, res) => {
     const jobs = await Job.find(query)
       .populate('company', 'name avatar')
 
-    // 🔥 SOLO lo necesario
-    const applications = await Application.find({
-      talent: req.user.id
-    }).select('job status')
+    return res.json(jobs)
 
-    const appMap = {}
+    // 🔥 Saber si el usuario ha aplicado a cada trabajo
+    // const applications = await Application.find({
+    //   talent: req.user.id
+    // }).select('job status')
 
-    applications.forEach(app => {
-      appMap[app.job.toString()] = app.status
-    })
+    // const appMap = {}
 
-    const jobsWithStatus = jobs.map(job => {
-      const jobObj = job.toObject()
+    // applications.forEach(app => {
+    //   appMap[app.job.toString()] = app.status
+    // })
 
-      return {
-        ...jobObj,
-        applicationStatus: appMap[job._id.toString()] || null
-      }
-    })
+    // const jobsWithStatus = jobs.map(job => {
+    //   const jobObj = job.toObject()
 
-    res.json(jobsWithStatus)
+    //   return {
+    //     ...jobObj,
+    //     applicationStatus: appMap[job._id.toString()] || null
+    //   }
+    // })
+
+    // res.json(jobsWithStatus)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
