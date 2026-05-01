@@ -1,13 +1,16 @@
 @BASE_URL = http://localhost:3000/api
 
 ### REGISTER A TALENT
+# @name registerTalent
+
 POST {{BASE_URL}}/users/register
 Content-Type: application/json
 
 {
   "role": "talent",
-  "name": "Paco",
-  "email": "paco@mail.com",
+  "firstName": "Pedro",
+  "lastName": "Gomez",
+  "email": "pedro@mail.com",
   "password": "password"
 }
 
@@ -17,22 +20,28 @@ POST {{BASE_URL}}/users/login
 Content-Type: application/json
 
 {
-  "email": "paco@mail.com",
+  "email": "pedro@mail.com",
   "password": "password"
 }
 
-### GET USER
-GET {{BASE_URL}}/users/profile
-Authorization: Bearer {{loginTalent.response.body.token}
+### GET MY USER
+GET {{BASE_URL}}/users/me
+Authorization: Bearer {{loginTalent.response.body.token}}
+
+### GET USER BY USERNAME
+GET {{BASE_URL}}/users/{{loginTalent.response.body.username}}
+Authorization: Bearer {{loginTalent.response.body.token}}
 
 ### UPDATE USER
-PUT {{BASE_URL}}/users/profile
-Authorization: Bearer {{loginTalent.response.body.token}
+PUT {{BASE_URL}}/users/me
+Authorization: Bearer {{loginTalent.response.body.token}}
 Content-Type: application/json
 
 {
-  "password": "Paco1"
+  "lastName": "Picados"
 }
+
+### TODO: updateMyUsername, deleteMyUser
 
 ### REGISTER AN ADMIN
 # @name registerAdmin
@@ -41,8 +50,9 @@ Content-Type: application/json
 
 {
   "role": "admin",
-  "name": "Julio",
-  "email": "julio@mail.com",
+  "firstName": "Paco",
+  "lastName": "Perez",
+  "email": "paco@mail.com",
   "password": "password"
 }
 

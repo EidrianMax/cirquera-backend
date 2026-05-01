@@ -21,9 +21,20 @@ const userSchema = new mongoose.Schema({
     enum: ['talent', 'company', 'admin'],
     required: true
   },
-  name: { type: String, required: true },
+
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+
+  username: { type: String, required: true, unique: true },
+
+  previousUsernames: {
+    type: [String],
+    default: []
+  },
+
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
+
   avatar: String,
   location: String,
   bio: String,
@@ -50,6 +61,10 @@ userSchema.set('toJSON', {
     delete ret.__v
     delete ret.password
   }
+})
+
+userSchema.virtual('fullName').get(function () {
+  return `${this.firstName} ${this.lastName}`
 })
 
 export default mongoose.model('User', userSchema)
