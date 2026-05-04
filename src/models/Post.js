@@ -14,7 +14,8 @@ const postSchema = new mongoose.Schema({
     type: { type: String, enum: ['image', 'video'] }
   }],
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  comments: [commentSchema]
+  comments: [commentSchema],
+  createdAt: { type: Date, default: Date.now }
 }, { timestamps: true })
 
 export default mongoose.model('Post', postSchema)
