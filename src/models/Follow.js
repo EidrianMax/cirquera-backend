@@ -3,12 +3,28 @@ import mongoose from 'mongoose'
 const followSchema = new mongoose.Schema({
   follower: { // quien sigue
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    refType: {
+      type: String,
+      enum: ['User', 'Company'],
+      required: true
+    },
+    refId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
     required: true
   },
   following: { // a quien sigue
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    refType: {
+      type: String,
+      enum: ['User', 'Company'],
+      required: true
+    },
+    refId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
     required: true
   },
   status: {

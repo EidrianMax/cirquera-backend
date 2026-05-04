@@ -18,7 +18,7 @@ const portfolioItemSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
   role: {
     type: String,
-    enum: ['talent', 'company', 'admin'],
+    enum: ['talent', 'admin'],
     required: true
   },
 

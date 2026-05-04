@@ -1,42 +1,51 @@
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import bcrypt from 'bcryptjs'
+
 import User from './models/User.js'
 import Job from './models/Job.js'
 import Post from './models/Post.js'
 import Application from './models/Application.js'
-import bcrypt from 'bcryptjs'
 
 dotenv.config()
 
 const users = [
   {
     role: 'admin',
-    name: 'Albert',
+    firstName: 'Albert',
+    lastName: 'Admin',
+    username: 'albert-admin',
     email: 'albert@cirquera.com',
     password: await bcrypt.hash('admin123', 10),
     location: 'Barcelona',
-    bio: 'Administrador de la plataforma.',
+    bio: 'Administrador de la plataforma.'
   },
   {
     role: 'admin',
-    name: 'Victor',
+    firstName: 'Victor',
+    lastName: 'Admin',
+    username: 'victor-admin',
     email: 'victor@cirquera.com',
     password: await bcrypt.hash('admin123', 10),
     location: 'Barcelona',
-    bio: 'Administrador de la plataforma.',
+    bio: 'Administrador de la plataforma.'
   },
   {
     role: 'talent',
-    name: 'Joan Artist',
+    firstName: 'Joan',
+    lastName: 'Artist',
+    username: 'joan-artist',
     email: 'joan@example.com',
     password: await bcrypt.hash('password123', 10),
     location: 'Barcelona',
-    bio: 'Malabarista professional amb 5 anys d\'experiència.',
+    bio: "Malabarista professional amb 5 anys d'experiència.",
     skills: ['Malabars', 'Equilibrisme', 'Acrobàcia']
   },
   {
     role: 'company',
-    name: 'Circ de l\'Est',
+    firstName: 'Circ',
+    lastName: "de l'Est",
+    username: 'circ-del-est',
     email: 'est@circ.com',
     password: await bcrypt.hash('password123', 10),
     location: 'Girona',
@@ -45,7 +54,9 @@ const users = [
   },
   {
     role: 'talent',
-    name: 'Maria Aèria',
+    firstName: 'Maria',
+    lastName: 'Aeria',
+    username: 'maria-aeria',
     email: 'maria@example.com',
     password: await bcrypt.hash('password123', 10),
     location: 'Valencia',
@@ -69,8 +80,9 @@ const importData = async () => {
 
     const sampleJobs = [
       {
-        title: 'Malabarista per a gala d\'estiu',
-        description: 'Busquem un malabarista amb habilitats de clown per a una sèrie de representacions a la costa.',
+        title: "Malabarista per a gala d'estiu",
+        description:
+          'Busquem un malabarista amb habilitats de clown per a una sèrie de representacions a la costa.',
         location: 'Palamós',
         contractType: 'temporal',
         skillsRequired: ['Malabars', 'Clown'],
@@ -78,7 +90,8 @@ const importData = async () => {
       },
       {
         title: 'Acrobata aeri',
-        description: 'Es busca acròbata per a espectacle nocturn permanent.',
+        description:
+          'Es busca acròbata per a espectacle nocturn permanent.',
         location: 'Girona',
         contractType: 'fijo',
         skillsRequired: ['Teles', 'Trapezi'],
@@ -96,7 +109,8 @@ const importData = async () => {
       },
       {
         author: talentUser2,
-        content: 'Molt contenta de formar part de la convenció de circ d\'aquest cap de setmana.',
+        content:
+          "Molt contenta de formar part de la convenció de circ d'aquest cap de setmana.",
         media: [{ url: 'https://via.placeholder.com/600x400', type: 'image' }]
       }
     ]
@@ -122,9 +136,11 @@ const destroyData = async () => {
   }
 }
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cirquera'
+const MONGO_URI =
+  process.env.MONGO_URI || 'mongodb://localhost:27017/cirquera'
 
-mongoose.connect(MONGO_URI)
+mongoose
+  .connect(MONGO_URI)
   .then(async () => {
     if (process.argv[2] === '-d') {
       await destroyData()
