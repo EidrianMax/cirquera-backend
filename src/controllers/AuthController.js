@@ -30,11 +30,7 @@ export const login = async (req, res) => {
       _id: account._id,
       email: account.email,
       type,
-
-      token: generateToken({
-        id: account._id,
-        type
-      })
+      token: generateToken(account._id, type)
     })
   } catch (error) {
     res.status(500).json({ message: error.message })
