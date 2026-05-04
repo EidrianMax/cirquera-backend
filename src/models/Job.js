@@ -9,7 +9,7 @@ const jobSchema = new mongoose.Schema({
     enum: ['temporal', 'fijo', 'freelance']
   },
   skillsRequired: [{ type: String }],
-  company: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true })
 

@@ -17,7 +17,6 @@ import chatRoutes from './routes/chatRoutes.js'
 import notificationRoutes from './routes/notificationRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
-import seedData from './utils/seedData.js'
 
 dotenv.config()
 
@@ -57,7 +56,6 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cirquera'
 mongoose.connect(MONGO_URI)
   .then(async () => {
     console.log('Connected to MongoDB')
-    await seedData()
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`)
     })

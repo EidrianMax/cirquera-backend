@@ -1,11 +1,23 @@
 @BASE_URL = http://localhost:3000/api
+
 ### GET ALL JOBS
 GET {{BASE_URL}}/jobs
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTBmY2JkMzUzMTU0Nzk2MTBjNzA4MiIsImlhdCI6MTc3NzQ4MDYzNywiZXhwIjoxNzgwMDcyNjM3fQ.VZ5JYk9g8FxV-wtxJELDXM4mQTzDhH2FTwUMyxA9HYY
+
+### SEARCH JOBS
+GET {{BASE_URL}}/jobs?search=show
+
+### SEARCH JOBS BY LOCATION
+GET {{BASE_URL}}/jobs?location=barcelona
+
+### SEARCH JOBS BY CONTRACT TYPE
+GET {{BASE_URL}}/jobs?contractType=fijo
+
+### SEARCH JOBS BY SKILLS
+GET {{BASE_URL}}/jobs?skills=malabares&skills=rigging
 
 ### REGISTER A COMPANY BEFORE TO CREATE A JOB
 # @name register
-POST {{BASE_URL}}/users/register
+POST {{BASE_URL}}/companies/register
 Content-Type: application/json
 
 {
@@ -15,9 +27,9 @@ Content-Type: application/json
   "role": "company"
 }
 
-###
+### LOGIN
 # @name login
-POST {{BASE_URL}}/users/login
+POST {{BASE_URL}}/auth/login
 Content-Type: application/json
 
 {
