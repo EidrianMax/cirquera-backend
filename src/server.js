@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url'
 
 // Routes imports
 import userRoutes from './routes/userRoutes.js'
+import companyRoutes from './routes/companyRoutes.js'
+import authRoutes from './routes/authRoutes.js'
 import jobRoutes from './routes/jobRoutes.js'
 import postRoutes from './routes/postRoutes.js'
 import applicationRoutes from './routes/applicationRoutes.js'
@@ -35,6 +37,8 @@ app.get('/api', (req, res) => res.send('API is running... 🚀'))
 
 // Routes
 app.use('/api/users', userRoutes)
+app.use('/api/companies', companyRoutes)
+app.use('/api/auth', authRoutes)
 app.use('/api/jobs', jobRoutes)
 app.use('/api/posts', postRoutes)
 app.use('/api/applications', applicationRoutes)
@@ -49,8 +53,6 @@ app.use(errorHandler)
 const PORT = process.env.PORT || 3000
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/cirquera'
-
-
 
 mongoose.connect(MONGO_URI)
   .then(async () => {

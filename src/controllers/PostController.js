@@ -5,27 +5,26 @@ import { createNotification } from './NotificationController.js'
 // @route   POST /api/posts
 export const createPost = async (req, res) => {
   try {
-    const { author, content, media } = req.body;
+    const { author, content, media } = req.body
 
     if (!author || !content || !content.trim()) {
-      return res.status(400).json({ message: "Missing data" });
+      return res.status(400).json({ message: 'Missing data' })
     }
     if (!author) {
-      return res.status(400).json({ message: "Missing author" });
+      return res.status(400).json({ message: 'Missing author' })
     }
     const post = await Post.create({
       author,
       content: content.trim(),
-      media: media || null,
-    });
+      media: media || null
+    })
 
-    res.status(201).json(post);
+    res.status(201).json(post)
   } catch (error) {
-    console.log("❌ CREATE POST ERROR:", error);
-    res.status(500).json({ message: error.message });
-
+    console.log('❌ CREATE POST ERROR:', error)
+    res.status(500).json({ message: error.message })
   }
-};
+}
 
 // @desc    Get all posts (Feed)
 // @route   GET /api/posts
