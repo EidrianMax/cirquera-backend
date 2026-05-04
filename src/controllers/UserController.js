@@ -1,65 +1,5 @@
-import Follow from '../models/Follow.js'
 import User from '../models/User.js'
-import generateToken from '../utils/generateToken.js'
-
-const buildUserProfile = async (myId, user) => {
-  const userId = user._id
-
-  const [followersCount, followingCount, isFollowing, isPending] = await Promise.all([
-    Follow.countDocuments({
-      following: userId,
-      status: 'accepted'
-    }),
-    Follow.countDocuments({
-      follower: userId,
-      status: 'accepted'
-    }),
-    Follow.exists({
-      follower: myId,
-      following: userId,
-      status: 'accepted'
-    }),
-    Follow.exists({
-      follower: myId,
-      following: userId,
-      status: 'pending'
-    })
-  ])
-
-  return {
-    user,
-    stats: {
-      followers: followersCount,
-      following: followingCount
-    },
-    relationship: {
-      isFollowing: !!isFollowing,
-      isPending: !!isPending,
-      isOwnProfile: myId.toString() === userId.toString()
-    }
-  }
-}
-
-const generateUsername = async (firstName, lastName) => {
-  const base = `${firstName}-${lastName}`
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-
-  let username = base
-  let exists = await User.findOne({ username })
-
-  let i = 1
-  while (exists) {
-    username = `${base}-${i}`
-    exists = await User.findOne({ username })
-    i++
-  }
-
-  return username
-}
+import { generateUsername, buildProfile } from './utils.js'
 
 // @desc    Get users with filters
 // @route   GET /api/users
@@ -95,6 +35,7 @@ export const registerUser = async (req, res) => {
     const { role, firstName, lastName, email, password } = req.body
 
     const userExists = await User.findOne({ email })
+
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' })
     }
@@ -123,32 +64,6 @@ export const registerUser = async (req, res) => {
   }
 }
 
-// @desc    Authenticate user
-// @route   POST /api/users/login
-export const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body
-
-    const user = await User.findOne({ email })
-
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id)
-      })
-    } else {
-      res.status(401).json({ message: 'Invalid email or password' })
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
 // @desc    Get my profile
 // @route   GET /api/users/profile
 export const getMyUser = async (req, res) => {
@@ -161,9 +76,12 @@ export const getMyUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    const profile = await buildUserProfile(myId, user)
+    const profile = await buildProfile(myId, user._id, 'User')
 
-    res.json(profile)
+    res.json({
+      user,
+      ...profile
+    })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -176,23 +94,18 @@ export const getUserByUsername = async (req, res) => {
     const { username } = req.params
     const myId = req.user.id
 
-    let user = await User.findOne({ username })
-
-    // 🔥 fallback: buscar en usernames antiguos
-    if (!user) {
-      user = await User.findOne({
-        previousUsernames: username
-      })
-    }
+    const user = await User.findOne({ username })
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    // aquí reutilizas tu buildUserProfile
-    const profile = await buildUserProfile(myId, user)
+    const profile = await buildProfile(myId, user._id, 'User')
 
-    res.json(profile)
+    res.json({
+      user,
+      ...profile
+    })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -201,6 +114,7 @@ export const getUserByUsername = async (req, res) => {
 // @desc    Update user profile
 // @route   PUT /api/users/profile
 export const updateMyUser = async (req, res) => {
+  console.log('entra')
   try {
     const user = await User.findById(req.user.id)
 

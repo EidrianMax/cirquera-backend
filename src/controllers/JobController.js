@@ -53,7 +53,7 @@ export const getJobs = async (req, res) => {
     }
 
     const jobs = await Job.find(query)
-      .populate('company', 'name avatar')
+      .populate('company')
 
     return res.json(jobs)
 
