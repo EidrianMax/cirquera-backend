@@ -5,9 +5,11 @@ import {
   updateMyUser,
   getMyUser,
   getUserByUsername,
-  updateMyUsername
+  updateMyUsername,
+  updateMyAvatar
 } from '../controllers/UserController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
+import { uploadAvatar } from '../middleware/uploadMiddleware.js'
 
 const router = express.Router()
 
@@ -17,6 +19,7 @@ router.post('/register', registerUser)
 router.get('/me', protect, getMyUser)
 router.put('/me', protect, updateMyUser)
 router.put('/me/username', protect, updateMyUsername)
+router.put('/me/avatar', protect, uploadAvatar, updateMyAvatar)
 router.get('/:username', protect, getUserByUsername)
 
 // GET /me -> getMyUser
