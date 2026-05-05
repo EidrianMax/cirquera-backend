@@ -5,18 +5,28 @@ import { createNotification } from './NotificationController.js'
 // @route   POST /api/posts
 export const createPost = async (req, res) => {
   try {
-    const { author, content, media } = req.body
+    const { content } = req.body
+    const author = req.user.id
 
-    if (!author || !content || !content.trim()) {
-      return res.status(400).json({ message: 'Missing data' })
+    if (!content || !content.trim()) {
+      return res.status(400).json({ message: 'Content is required' })
     }
-    if (!author) {
-      return res.status(400).json({ message: 'Missing author' })
+
+    // Procesar archivos multimedia
+    let media = []
+    if (req.files && req.files.length > 0) {
+      media = req.files.map(file => ({
+        filename: file.filename,
+        path: `/uploads/posts/${file.filename}`,
+        type: file.mimetype.startsWith('video') ? 'video' : 'image',
+        uploadedAt: new Date()
+      }))
     }
+
     const post = await Post.create({
       author,
       content: content.trim(),
-      media: media || null
+      media
     })
 
     res.status(201).json(post)
@@ -113,12 +123,67 @@ export const addComment = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-    if (post) {
-      await post.deleteOne()
-      res.json({ message: 'Post removed' })
-    } else {
-      res.status(404).json({ message: 'Post not found' })
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' })
     }
+
+    // Verificar que el usuario es el autor
+    if (post.author.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to delete this post' })
+    }
+
+    // Eliminar archivos multimedia del disco
+    if (post.media && Array.isArray(post.media)) {
+      const fs = await import('fs')
+      const path = await import('path')
+
+      for (const media of post.media) {
+        const filePath = path.join(process.cwd(), 'uploads/posts', media.filename)
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath)
+        }
+      }
+    }
+
+    await post.deleteOne()
+    res.json({ message: 'Post removed' })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+// @desc    Add media to existing post
+// @route   POST /api/posts/:id/media
+export const addPostMedia = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id)
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' })
+    }
+
+    // Verificar que el usuario es el autor
+    if (post.author.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to modify this post' })
+    }
+
+    // Procesar nuevos archivos
+    let newMedia = []
+    if (req.files && req.files.length > 0) {
+      newMedia = req.files.map(file => ({
+        filename: file.filename,
+        path: `/uploads/posts/${file.filename}`,
+        type: file.mimetype.startsWith('video') ? 'video' : 'image',
+        uploadedAt: new Date()
+      }))
+    }
+
+    // Agregar a la media existente
+    post.media = [...(post.media || []), ...newMedia]
+    await post.save()
+
+    res.json(post)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
