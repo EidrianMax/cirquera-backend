@@ -8,5 +8,3 @@ yarn-debug.log*
 yarn-error.log*
 
 # Multimedia
-uploads/*
-!uploads/.gitkeep
