@@ -10,8 +10,10 @@ const postSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   content: { type: String, required: true },
   media: [{
-    url: String,
-    type: { type: String, enum: ['image', 'video'] }
+    filename: { type: String, required: true },
+    path: { type: String, required: true },
+    type: { type: String, enum: ['image', 'video'], required: true },
+    uploadedAt: { type: Date, default: Date.now }
   }],
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   comments: [commentSchema],

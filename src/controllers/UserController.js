@@ -112,9 +112,8 @@ export const getUserByUsername = async (req, res) => {
 }
 
 // @desc    Update user profile
-// @route   PUT /api/users/profile
+// @route   PUT /api/users/me
 export const updateMyUser = async (req, res) => {
-  console.log('entra')
   try {
     const user = await User.findById(req.user.id)
 
@@ -122,9 +121,9 @@ export const updateMyUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
+    // No manejar avatar aquí - usar endpoint específico
     user.firstName = req.body.firstName || user.firstName
     user.lastName = req.body.lastName || user.lastName
-    user.avatar = req.body.avatar || user.avatar
     user.location = req.body.location || user.location
     user.bio = req.body.bio || user.bio
     user.skills = req.body.skills || user.skills
@@ -167,6 +166,46 @@ export const updateMyUsername = async (req, res) => {
     res.json({
       message: 'Username updated successfully',
       username: user.username
+    })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+// @desc    Update user avatar
+// @route   PUT /api/users/me/avatar
+export const updateMyAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    // Eliminar avatar anterior si existe
+    if (user.avatar?.filename) {
+      const fs = await import('fs')
+      const path = await import('path')
+      const oldFilePath = path.join(process.cwd(), 'uploads/avatars', user.avatar.filename)
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath)
+      }
+    }
+
+    // Guardar nuevo avatar
+    if (req.file) {
+      user.avatar = {
+        filename: req.file.filename,
+        path: `/uploads/avatars/${req.file.filename}`,
+        uploadedAt: new Date()
+      }
+    }
+
+    const updatedUser = await user.save()
+
+    res.json({
+      message: 'Avatar updated successfully',
+      avatar: updatedUser.avatar
     })
   } catch (error) {
     res.status(500).json({ message: error.message })
