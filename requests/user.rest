@@ -29,7 +29,7 @@ GET {{BASE_URL}}/users/me
 Authorization: Bearer {{loginTalent.response.body.token}}
 
 ### GET USER BY USERNAME
-GET {{BASE_URL}}/users/{{loginTalent.response.body.username}}
+GET {{BASE_URL}}/users/{{loginTalent.response.body.user.username}}
 Authorization: Bearer {{loginTalent.response.body.token}}
 
 ### UPDATE USER
@@ -58,7 +58,7 @@ Content-Type: application/json
 
 ### LOGIN AN ADMIN
 # @name loginAdmin
-POST {{BASE_URL}}/users/login
+POST {{BASE_URL}}/auth/login
 Content-Type: application/json
 
 {

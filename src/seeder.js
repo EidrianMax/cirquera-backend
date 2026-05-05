@@ -31,7 +31,7 @@ const importData = async () => {
         lastName: 'Martínez',
         username: 'albert-martinez',
         email: 'albert@cirquera.com',
-        password: await hash('admin123'),
+        password: await hash('password'),
         location: 'Barcelona',
         bio: 'Administrador de Cirquera'
       },
@@ -41,7 +41,7 @@ const importData = async () => {
         lastName: 'Gómez',
         username: 'victor-gomez',
         email: 'victor@cirquera.com',
-        password: await hash('admin123'),
+        password: await hash('password'),
         location: 'Barcelona'
       },
 
@@ -52,7 +52,7 @@ const importData = async () => {
         lastName: 'Rovira',
         username: 'joan-rovira',
         email: 'joan@circ.cat',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Barcelona',
         bio: 'Malabarista profesional especializado en bolas y fuego',
         skills: ['Malabares', 'Fuego', 'Clown']
@@ -63,7 +63,7 @@ const importData = async () => {
         lastName: 'Sánchez',
         username: 'maria-aerea',
         email: 'maria@aerial.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Valencia',
         bio: 'Artista aérea (telas, aro y trapecio)',
         skills: ['Telas', 'Trapecio', 'Aro']
@@ -74,7 +74,7 @@ const importData = async () => {
         lastName: 'Jiménez',
         username: 'carlos-acro',
         email: 'carlos@acro.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Madrid',
         bio: 'Acróbata de suelo y portés',
         skills: ['Acrobacia', 'Equilibrio']
@@ -85,7 +85,7 @@ const importData = async () => {
         lastName: 'Fernández',
         username: 'lucia-clown',
         email: 'lucia@clown.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Sevilla',
         bio: 'Clown y actriz física',
         skills: ['Clown', 'Teatro físico']
@@ -96,7 +96,7 @@ const importData = async () => {
         lastName: 'López',
         username: 'david-juggler',
         email: 'david@juggle.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Barcelona',
         bio: 'Malabarista técnico con 7 objetos',
         skills: ['Malabares', 'Diábolo']
@@ -107,7 +107,7 @@ const importData = async () => {
         lastName: 'Ruiz',
         username: 'elena-danza',
         email: 'elena@dance.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Madrid',
         bio: 'Danza contemporánea aplicada al circo',
         skills: ['Danza', 'Expresión corporal']
@@ -118,7 +118,7 @@ const importData = async () => {
         lastName: 'Ortega',
         username: 'pablo-rigger',
         email: 'pablo@rigging.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Valencia',
         bio: 'Técnico de rigging y estructuras aéreas',
         skills: ['Rigging', 'Seguridad']
@@ -129,7 +129,7 @@ const importData = async () => {
         lastName: 'Vidal',
         username: 'ana-hoop',
         email: 'ana@hoop.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Barcelona',
         bio: 'Especialista en aro aéreo',
         skills: ['Aro', 'Flexibilidad']
@@ -144,7 +144,7 @@ const importData = async () => {
         name: 'Circ Raluy Legacy',
         username: 'circ-raluy',
         email: 'info@raluy.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Barcelona',
         description: 'Compañía histórica de circo clásico',
         industry: 'Circus',
@@ -154,7 +154,7 @@ const importData = async () => {
         name: 'Cirque du Soleil España',
         username: 'cirque-du-soleil-es',
         email: 'spain@cirque.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Madrid',
         description: 'Producciones internacionales de circo contemporáneo',
         industry: 'Entertainment'
@@ -163,7 +163,7 @@ const importData = async () => {
         name: 'Circ Cric',
         username: 'circ-cric',
         email: 'info@circcric.cat',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Catalunya',
         description: 'Circo familiar y pedagógico'
       },
@@ -171,7 +171,7 @@ const importData = async () => {
         name: 'La Fura dels Baus',
         username: 'fura-dels-baus',
         email: 'info@fura.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Barcelona',
         description: 'Teatro físico y espectáculos de gran formato'
       },
@@ -179,7 +179,7 @@ const importData = async () => {
         name: 'NoFit State Circus',
         username: 'nofit-state',
         email: 'contact@nofitstate.org',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Valencia',
         description: 'Circo contemporáneo experimental'
       },
@@ -187,35 +187,35 @@ const importData = async () => {
         name: 'Gran Circo Mundial',
         username: 'gran-circo',
         email: 'info@grancirco.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Madrid'
       },
       {
         name: 'Circo del Sol Producciones',
         username: 'circo-producciones',
         email: 'jobs@circoprod.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Barcelona'
       },
       {
         name: 'Eventos Escénicos SL',
         username: 'eventos-escenicos',
         email: 'contacto@eventos.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Sevilla'
       },
       {
         name: 'Aerial Arts Studio',
         username: 'aerial-arts',
         email: 'info@aerialarts.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Valencia'
       },
       {
         name: 'Clown Factory',
         username: 'clown-factory',
         email: 'hello@clownfactory.com',
-        password: await hash('password123'),
+        password: await hash('password'),
         location: 'Barcelona'
       }
     ])

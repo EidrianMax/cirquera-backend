@@ -1,0 +1,46 @@
+@BASE_URL = http://localhost:3000/api
+
+# @name loginUserId
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "joan@circ.cat",
+  "password": "password"
+}
+
+###
+# @name loginTargetId
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "maria@aerial.com",
+  "password": "password"
+}
+
+### ACCESS CHAT
+# @name accessChat
+POST {{BASE_URL}}/chats
+Content-Type: application/json
+
+{
+  "userId": "{{loginUserId.response.body.user._id}}",
+  "targetId": "{{loginTargetId.response.body.user._id}}"
+}
+
+### SEND MESSAGE
+POST {{BASE_URL}}/chats/messages
+Content-Type: application/json
+
+{
+  "chatId": "{{accessChat.response.body._id}}",
+  "sender": "{{loginUserId.response.body.user._id}}",
+  "content": "Hola, ¿cómo estás?"
+}
+
+### GET CHATS BY USER ID
+GET {{BASE_URL}}/chats/{{loginUserId.response.body.user._id}}
+
+### GET MESSAGES
+GET {{BASE_URL}}/chats/messages/{{accessChat.response.body._id}}
