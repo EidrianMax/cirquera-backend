@@ -27,10 +27,9 @@ export const login = async (req, res) => {
     }
 
     res.json({
-      _id: account._id,
-      email: account.email,
-      type,
-      token: generateToken(account._id, type)
+      user: account,
+      token: generateToken(account._id, type),
+      type
     })
   } catch (error) {
     res.status(500).json({ message: error.message })
