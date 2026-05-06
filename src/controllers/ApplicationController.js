@@ -5,7 +5,20 @@ import { createNotification } from './NotificationController.js'
 // @route   POST /api/applications
 export const applyToJob = async (req, res) => {
   try {
-    const { job, talent, message } = req.body
+    if (req.authType !== 'user') {
+      return res.status(403).json({ message: 'Only talents can apply to jobs' })
+    }
+
+    const { job, message } = req.body
+    const talent = req.user.id
+
+    const existingApplication = await Application.findOne({ job, talent })
+
+    if (existingApplication) {
+      existingApplication.message = message ?? existingApplication.message
+      const updatedApplication = await existingApplication.save()
+      return res.json(updatedApplication)
+    }
 
     const application = await Application.create({
       job,
@@ -56,10 +69,14 @@ export const updateApplicationStatus = async (req, res) => {
     const application = await Application.findById(req.params.id)
 
     if (application) {
+      const previousStatus = application.status
       application.status = req.body.status || application.status
+      if (req.body.message !== undefined) {
+        application.message = req.body.message
+      }
       const updatedApplication = await application.save()
 
-      if (application.status === 'accepted') {
+      if (req.body.status === 'accepted' && previousStatus !== 'accepted') {
         await createNotification({
           user: application.talent,
           type: 'jobAccepted',

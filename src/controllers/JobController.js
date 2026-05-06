@@ -1,4 +1,21 @@
 import Job from '../models/Job.js'
+import Application from '../models/Application.js'
+import jwt from 'jsonwebtoken'
+
+const getTalentIdFromRequest = (req) => {
+  const authHeader = req.headers.authorization
+
+  if (!authHeader?.startsWith('Bearer')) return null
+
+  try {
+    const token = authHeader.split(' ')[1]
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key')
+
+    return decoded.type === 'user' ? decoded.id : null
+  } catch {
+    return null
+  }
+}
 
 export const createJob = async (req, res) => {
   try {
@@ -68,7 +85,36 @@ export const getJobs = async (req, res) => {
     const jobs = await Job.find(query)
       .populate('company', 'name username logo location')
 
-    return res.json(jobs)
+    const talentId = getTalentIdFromRequest(req)
+
+    if (!talentId) {
+      return res.json(jobs)
+    }
+
+    const jobIds = jobs.map(job => job._id)
+    const applications = await Application.find({
+      talent: talentId,
+      job: { $in: jobIds }
+    }).select('job status message')
+
+    const applicationsByJob = applications.reduce((acc, application) => {
+      acc[application.job.toString()] = application
+      return acc
+    }, {})
+
+    const jobsWithApplicationStatus = jobs.map(job => {
+      const jobObject = job.toObject()
+      const application = applicationsByJob[job._id.toString()]
+
+      return {
+        ...jobObject,
+        applicationId: application?._id || null,
+        applicationStatus: application?.status || null,
+        applicationMessage: application?.message || ''
+      }
+    })
+
+    return res.json(jobsWithApplicationStatus)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
