@@ -10,10 +10,22 @@ const postSchema = new mongoose.Schema({
   author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   content: { type: String, required: true },
   media: {
-    path: { type: String, required: true },
-    type: { type: String, enum: ['image', 'video'], required: true },
+    path: {
+      type: String,
+      required: function () {
+        return this.media?.type != null
+      }
+    },
+    type: {
+      type: String,
+      enum: ['image', 'video'],
+      required: function () {
+        return this.media?.path != null
+      }
+    },
     uploadedAt: { type: Date, default: Date.now }
   },
+  uploadedAt: { type: Date, default: Date.now },
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   comments: [commentSchema],
   createdAt: { type: Date, default: Date.now }

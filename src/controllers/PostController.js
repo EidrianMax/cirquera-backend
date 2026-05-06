@@ -7,42 +7,48 @@ import streamifier from 'streamifier'
 // @route   POST /api/posts
 export const createPost = async (req, res) => {
   try {
+    const author = req.user
     const { content } = req.body
-    const author = req.user.id
     const file = req.file
+
+    // Validaciones básicas
+    if (!author) {
+      return res.status(400).json({ message: 'Missing author' })
+    }
 
     if (!content || !content.trim()) {
       return res.status(400).json({ message: 'Content is required' })
     }
 
-    const uploadFromBuffer = () =>
-      new Promise((resolve, reject) => {
-        const stream = cloudinary.v2.uploader.upload_stream(
-          { folder: 'cirquera/posts', resource_type: 'auto' },
-          (error, result) => {
-            if (error) reject(error)
-            else resolve(result)
-          }
-        )
+    let media = null
 
-        streamifier.createReadStream(file.buffer).pipe(stream)
-      })
+    // Solo subir si hay archivo
+    if (file) {
+      const uploadFromBuffer = () =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.v2.uploader.upload_stream(
+            { folder: 'cirquera/posts', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
 
-    const result = await uploadFromBuffer()
+          streamifier.createReadStream(file.buffer).pipe(stream)
+        })
 
-    if (!author || !content || !content.trim()) {
-      return res.status(400).json({ message: 'Missing data' })
-    }
-    if (!author) {
-      return res.status(400).json({ message: 'Missing author' })
-    }
-    const post = await Post.create({
-      author,
-      content: content.trim(),
-      media: {
+      const result = await uploadFromBuffer()
+
+      media = {
         path: result.secure_url,
         type: result.resource_type === 'video' ? 'video' : 'image'
       }
+    }
+
+    const post = await Post.create({
+      author,
+      content: content.trim(),
+      media
     })
 
     res.status(201).json(post)
