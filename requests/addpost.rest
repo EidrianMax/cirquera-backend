@@ -1,16 +1,7 @@
 @BASE_URL = http://localhost:3000/api
+@TOKEN = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZmE3ZDU3ZDZkNmFjZjk3NjRkMGNiNiIsInR5cGUiOiJ1c2VyIiwiaWF0IjoxNzc4MDU3OTc3LCJleHAiOjE3ODA2NDk5Nzd9.GoeCNhM0YQQNMH3a4U4sR2XidRcgqr6GneJvvruuN4c
 
-### LOGIN A TALENT
-# @name loginTalent
-POST {{BASE_URL}}/auth/login
-Content-Type: application/json
 
-{
-  "email": "pedro@mail.com",
-  "password": "password"
-}
-
-@TOKEN = Bearer {{loginTalent.response.body.token}}
 
 POST {{BASE_URL}}/posts
 Authorization: {{TOKEN}}

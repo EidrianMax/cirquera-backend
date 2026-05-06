@@ -18,9 +18,11 @@ export const createPost = async (req, res) => {
       media = req.files.map(file => ({
         filename: file.filename,
         path: `/uploads/posts/${file.filename}`,
-        type: file.mimetype.startsWith('video') ? 'video' : 'image',
+        type: 'image',
         uploadedAt: new Date()
       }))
+    }  else {
+      console.log('No hay imagen')
     }
 
     const post = await Post.create({
