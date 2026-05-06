@@ -10,7 +10,7 @@ const router = express.Router()
 
 router.post('/', accessChat)
 router.get('/:userId', getChats)
-router.post('/message', sendMessage)
+router.post('/messages', sendMessage)
 router.get('/messages/:chatId', getMessages)
 
 export default router

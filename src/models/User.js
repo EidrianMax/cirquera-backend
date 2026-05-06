@@ -10,9 +10,11 @@ const experienceSchema = new mongoose.Schema({
 }, { _id: false })
 
 const portfolioItemSchema = new mongoose.Schema({
-  url: String,
-  type: { type: String, enum: ['image', 'video'] },
-  description: String
+  filename: { type: String, required: true },
+  path: { type: String, required: true },
+  type: { type: String, enum: ['image', 'video'], required: true },
+  description: String,
+  uploadedAt: { type: Date, default: Date.now }
 }, { _id: true })
 
 const userSchema = new mongoose.Schema({
@@ -24,7 +26,6 @@ const userSchema = new mongoose.Schema({
 
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  name: String,
 
   username: { type: String, required: true, unique: true },
 
@@ -36,6 +37,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
 
+
   status: {
     type: String,
     enum: ['active', 'suspended'],
@@ -43,6 +45,15 @@ const userSchema = new mongoose.Schema({
   },
 
   avatar: String,
+
+  jobTitle: String,
+
+  avatar: {
+    filename: String,
+    path: String,
+    uploadedAt: { type: Date, default: Date.now }
+  },
+
   location: String,
   bio: String,
   skills: [{ type: String }],

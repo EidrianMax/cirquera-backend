@@ -9,14 +9,14 @@ export const accessChat = async (req, res) => {
 
     let chat = await Chat.findOne({
       participants: { $all: [userId, targetId] }
-    }).populate('participants', 'name avatar')
+    }).populate('participants', 'firstName lastName avatar')
       .populate('lastMessage')
 
     if (!chat) {
       chat = await Chat.create({
         participants: [userId, targetId]
       })
-      chat = await Chat.findById(chat._id).populate('participants', 'name avatar')
+      chat = await Chat.findById(chat._id).populate('participants', 'firstName lastName avatar')
     }
 
     res.json(chat)
@@ -31,7 +31,7 @@ export const getChats = async (req, res) => {
   try {
     const chats = await Chat.find({
       participants: { $in: [req.params.userId] }
-    }).populate('participants', 'name avatar')
+    }).populate('participants', 'firstName lastName avatar')
       .populate('lastMessage')
       .sort({ updatedAt: -1 })
 
@@ -66,7 +66,7 @@ export const sendMessage = async (req, res) => {
 export const getMessages = async (req, res) => {
   try {
     const messages = await Message.find({ chat: req.params.chatId })
-      .populate('sender', 'name avatar')
+      .populate('sender', 'firstName lastName avatar')
       .sort({ createdAt: 1 })
 
     res.json(messages)

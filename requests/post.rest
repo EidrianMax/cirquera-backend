@@ -1,0 +1,77 @@
+@BASE_URL = http://localhost:3000/api
+
+### REGISTER A TALENT BEFORE TO CREATE A POST
+# @name register
+
+POST {{BASE_URL}}/users/register
+Content-Type: application/json
+
+{
+  "role": "talent",
+  "firstName": "Pedro",
+  "lastName": "Gomez",
+  "email": "pedro@mail.com",
+  "password": "password"
+}
+
+### LOGIN A TALENT
+# @name login
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "pedro@mail.com",
+  "password": "password"
+}
+
+### CREATE POST WITH ONLY CONTENT
+# @name createPost
+POST {{BASE_URL}}/posts
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "author": "{{login.response.body.user._id}}",
+  "content": "We are looking for a talented software engineer to join our team. The ideal candidate should have experience with JavaScript, Node.js, and React. Responsibilities include developing and maintaining web applications, collaborating with cross-functional teams, and participating in code reviews. If you are passionate about technology and eager to work in a dynamic environment, we would love to hear from you!"
+}
+
+### CREATE POST WITH CONTENT AND MEDIA
+# @name createPost
+POST {{BASE_URL}}/posts
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="content"
+
+Hola este es mi post
+--boundary123
+Content-Disposition: form-data; name="media"; filename="foto.jpg"
+Content-Type: image/jpeg
+
+< ./image.jpg
+--boundary123--
+
+### CREATE POST WITH CONTENT AND MEDIA
+# @name createPost
+POST {{BASE_URL}}/posts
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="content"
+
+Hola este es mi post
+
+--boundary123
+Content-Disposition: form-data; name="media"; filename="video.mp4"
+Content-Type: video/mp4
+
+< ./video.mp4
+--boundary123--
+
+### GET ALL POSTS
+GET {{BASE_URL}}/posts
+
+### GET POSTS BY ID
+GET {{BASE_URL}}/posts/{{createPost.response.body._id}}
