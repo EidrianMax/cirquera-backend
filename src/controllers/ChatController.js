@@ -32,7 +32,7 @@ export const getChats = async (req, res) => {
     const chats = await Chat.find({
       participants: { $in: [req.params.userId] }
     }).populate('participants', 'firstName lastName avatar')
-      .populate('lastMessange')
+      .populate('lastMessage')
       .sort({ updatedAt: -1 })
 
     res.json(chats)
