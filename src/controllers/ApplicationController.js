@@ -1,4 +1,5 @@
 import Application from '../models/Application.js'
+import Job from '../models/Job.js'
 import { createNotification } from './NotificationController.js'
 
 // @desc    Apply for a job
@@ -26,8 +27,6 @@ export const applyToJob = async (req, res) => {
       message
     })
 
-    // Notificar a la empresa del trabajo
-    const Job = await (await import('../models/Job.js')).default
     const targetJob = await Job.findById(job)
 
     await createNotification({
@@ -69,6 +68,24 @@ export const updateApplicationStatus = async (req, res) => {
     const application = await Application.findById(req.params.id)
 
     if (application) {
+      if (req.authType === 'company') {
+        const job = await Job.findById(application.job)
+
+        if (!job || job.company.toString() !== req.user.id) {
+          return res.status(403).json({ message: 'Not authorized' })
+        }
+      }
+
+      if (req.authType === 'user') {
+        if (application.talent.toString() !== req.user.id) {
+          return res.status(403).json({ message: 'Not authorized' })
+        }
+
+        if (req.body.status) {
+          return res.status(403).json({ message: 'Only companies can update application status' })
+        }
+      }
+
       const previousStatus = application.status
       application.status = req.body.status || application.status
       if (req.body.message !== undefined) {
