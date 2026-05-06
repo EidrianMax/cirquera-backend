@@ -1,0 +1,64 @@
+@BASE_URL = http://localhost:3000/api
+
+### LOGIN A TALENT
+# @name loginTalent
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "pedro@mail.com",
+  "password": "password"
+}
+
+@TOKEN = Bearer {{loginTalent.response.body.token}}
+
+POST {{BASE_URL}}/posts
+Authorization: {{TOKEN}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="content"
+
+Mi primer post con una imagen
+------WebKitFormBoundary
+Content-Disposition: form-data; name="media"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./test.jpg
+------WebKitFormBoundary--
+
+###
+
+### 2. Crear post CON DOS IMÁGENES
+POST {{BASE_URL}}/posts
+Authorization: {{TOKEN}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="content"
+
+Mi post con dos imágenes
+------WebKitFormBoundary
+Content-Disposition: form-data; name="media"; filename="image1.jpg"
+Content-Type: image/jpeg
+
+< ./image1.jpg
+------WebKitFormBoundary
+Content-Disposition: form-data; name="media"; filename="image2.jpg"
+Content-Type: image/jpeg
+
+< ./image2.jpg
+------WebKitFormBoundary--
+
+###
+
+### 3. Crear post SIN imágenes
+POST {{BASE_URL}}/posts
+Authorization: {{TOKEN}}
+Content-Type: application/json
+
+{
+  "content": "Post sin imágenes"
+}
+
+###
