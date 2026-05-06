@@ -1,5 +1,7 @@
 import Post from '../models/Post.js'
 import { createNotification } from './NotificationController.js'
+import cloudinary from 'cloudinary'
+import streamifier from 'streamifier'
 
 // @desc    Create a new post
 // @route   POST /api/posts
@@ -7,26 +9,34 @@ export const createPost = async (req, res) => {
   try {
     const { content } = req.body
     const author = req.user.id
+    const file = req.file
 
     if (!content || !content.trim()) {
       return res.status(400).json({ message: 'Content is required' })
     }
 
-    // Procesar archivos multimedia
-    let media = []
-    if (req.files && req.files.length > 0) {
-      media = req.files.map(file => ({
-        filename: file.filename,
-        path: `/uploads/posts/${file.filename}`,
-        type: file.mimetype.startsWith('video') ? 'video' : 'image',
-        uploadedAt: new Date()
-      }))
-    }
+    const uploadFromBuffer = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.v2.uploader.upload_stream(
+          { folder: 'cirquera/posts', resource_type: 'auto' },
+          (error, result) => {
+            if (error) reject(error)
+            else resolve(result)
+          }
+        )
+
+        streamifier.createReadStream(file.buffer).pipe(stream)
+      })
+
+    const result = await uploadFromBuffer()
 
     const post = await Post.create({
       author,
       content: content.trim(),
-      media
+      media: {
+        path: result.secure_url,
+        type: result.resource_type === 'video' ? 'video' : 'image'
+      }
     })
 
     res.status(201).json(post)
@@ -41,7 +51,7 @@ export const createPost = async (req, res) => {
 export const getPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-      .populate('author', 'name avatar')
+      .populate('author', 'firstName lastName avatar')
       .sort({ createdAt: -1 })
     res.json(posts)
   } catch (error) {
@@ -54,8 +64,8 @@ export const getPosts = async (req, res) => {
 export const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'name avatar')
-      .populate('comments.user', 'name avatar')
+      .populate('author', 'firstName lastName avatar')
+      .populate('comments.user', 'firstName lastName avatar')
     if (post) {
       res.json(post)
     } else {
