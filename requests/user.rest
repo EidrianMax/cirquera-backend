@@ -58,7 +58,7 @@ Content-Type: application/json
 
 ### LOGIN AN ADMIN
 # @name loginAdmin
-POST {{BASE_URL}}/users/login
+POST {{BASE_URL}}/auth/login
 Content-Type: application/json
 
 {

@@ -1,5 +1,19 @@
 @BASE_URL = http://localhost:3000/api
 
+### REGISTER AN ADMIN
+# @name registerAdmin
+POST {{BASE_URL}}/users/register
+Content-Type: application/json
+
+{
+  "role": "admin",
+  "firstName": "Albert",
+  "lastName": "Perez",
+  "email": "albert@cirquera.com",
+  "password": "password"
+}
+
+
 ### ADMIN LOGIN
 # @name adminLogin
 POST {{BASE_URL}}/admin/auth/login
@@ -7,7 +21,7 @@ Content-Type: application/json
 
 {
   "email": "albert@cirquera.com",
-  "password": "admin123"
+  "password": "password"
 }
 
 ### DASHBOARD
@@ -61,6 +75,8 @@ Content-Type: application/json
 ### LIST JOBS
 GET {{BASE_URL}}/admin/jobs?status=pending&page=1&limit=10
 Authorization: Bearer {{adminLogin.response.body.token}}
+
+### TODO: CREATE A COMPANY BEFORE TO CREATE A NEW JOB
 
 ### CREATE JOB
 POST {{BASE_URL}}/admin/jobs
