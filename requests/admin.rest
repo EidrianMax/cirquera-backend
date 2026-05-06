@@ -1,0 +1,137 @@
+@BASE_URL = http://localhost:3000/api
+
+### ADMIN LOGIN
+# @name adminLogin
+POST {{BASE_URL}}/admin/auth/login
+Content-Type: application/json
+
+{
+  "email": "albert@cirquera.com",
+  "password": "admin123"
+}
+
+### DASHBOARD
+GET {{BASE_URL}}/admin/dashboard
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+### LIST USERS / ACCOUNTS
+GET {{BASE_URL}}/admin/users?role=talent&status=active&q=barcelona&page=1&limit=10
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+### EXPORT USERS CSV
+GET {{BASE_URL}}/admin/users/export
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+### CREATE TALENT
+# @name createTalent
+POST {{BASE_URL}}/admin/users
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{
+  "role": "talent",
+  "name": "Nueva Artista",
+  "email": "nueva-artista@cirquera.com",
+  "password": "password123",
+  "location": "Barcelona",
+  "skills": ["Telas", "Danza"]
+}
+
+### CREATE COMPANY
+POST {{BASE_URL}}/admin/users
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{
+  "role": "company",
+  "name": "Nueva Compañía",
+  "email": "nueva-compania@cirquera.com",
+  "password": "password123",
+  "location": "Madrid",
+  "industry": "Circus"
+}
+
+### TOGGLE USER STATUS
+PATCH {{BASE_URL}}/admin/users/{{createTalent.response.body._id}}/status
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{}
+
+### LIST JOBS
+GET {{BASE_URL}}/admin/jobs?status=pending&page=1&limit=10
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+### CREATE JOB
+POST {{BASE_URL}}/admin/jobs
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{
+  "title": "Acróbata para gala",
+  "company": "REPLACE_WITH_COMPANY_ID",
+  "contractType": "freelance",
+  "status": "pending",
+  "location": "Barcelona",
+  "skillsRequired": "Acrobacia, Equilibrio",
+  "description": "Oferta creada desde el panel admin."
+}
+
+### APPROVE JOB
+PATCH {{BASE_URL}}/admin/jobs/REPLACE_WITH_JOB_ID/status
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{
+  "status": "approved"
+}
+
+### LIST REPORTS
+GET {{BASE_URL}}/admin/reports?status=pending
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+### CREATE REPORT
+POST {{BASE_URL}}/admin/reports
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{
+  "targetType": "job",
+  "targetId": "REPLACE_WITH_JOB_ID",
+  "reason": "Oferta pendiente de revisión manual"
+}
+
+### RESOLVE REPORT
+PATCH {{BASE_URL}}/admin/reports/REPLACE_WITH_REPORT_ID/resolve
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{
+  "status": "resolved",
+  "resolution": "Revisado desde el panel admin"
+}
+
+### LIST CATEGORIES
+GET {{BASE_URL}}/admin/categories
+Authorization: Bearer {{adminLogin.response.body.token}}
+
+### CREATE CATEGORY
+POST {{BASE_URL}}/admin/categories
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{
+  "name": "Aéreos",
+  "description": "Especialidades de circo aéreo",
+  "icon": "category",
+  "skills": "Telas, Aro, Trapecio"
+}
+
+### ADD SKILL
+POST {{BASE_URL}}/admin/categories/REPLACE_WITH_CATEGORY_ID/skills
+Authorization: Bearer {{adminLogin.response.body.token}}
+Content-Type: application/json
+
+{
+  "skill": "Cuerda lisa"
+}

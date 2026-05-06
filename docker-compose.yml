@@ -1,0 +1,34 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://admin:password@db:27017/cirquera?authSource=admin
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    command: bash -c "npm install && npm run dev"
+    networks:
+      - cirquera-net
+
+  db:
+    image: mongo:6-jammy
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: cirquera
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - cirquera-net
+
+volumes:
+  mongodata:
+
+networks:
+  cirquera-net:

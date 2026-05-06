@@ -1,0 +1,79 @@
+@BASE_URL = http://localhost:3000/api
+
+### REGISTER A TALENT
+# @name registerTalent
+
+POST {{BASE_URL}}/users/register
+Content-Type: application/json
+
+{
+  "role": "talent",
+  "firstName": "Pedro",
+  "lastName": "Gomez",
+  "email": "pedro@mail.com",
+  "password": "password"
+}
+
+### LOGIN A TALENT
+# @name loginTalent
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "pedro@mail.com",
+  "password": "password"
+}
+
+### GET MY USER
+GET {{BASE_URL}}/users/me
+Authorization: Bearer {{loginTalent.response.body.token}}
+
+### GET USER BY USERNAME
+GET {{BASE_URL}}/users/{{loginTalent.response.body.username}}
+Authorization: Bearer {{loginTalent.response.body.token}}
+
+### UPDATE USER
+PUT {{BASE_URL}}/users/me
+Authorization: Bearer {{loginTalent.response.body.token}}
+Content-Type: application/json
+
+{
+  "lastName": "Picados"
+}
+
+### TODO: updateMyUsername, deleteMyUser
+
+### REGISTER AN ADMIN
+# @name registerAdmin
+POST {{BASE_URL}}/users/register
+Content-Type: application/json
+
+{
+  "role": "admin",
+  "firstName": "Paco",
+  "lastName": "Perez",
+  "email": "paco@mail.com",
+  "password": "password"
+}
+
+### LOGIN AN ADMIN
+# @name loginAdmin
+POST {{BASE_URL}}/users/login
+Content-Type: application/json
+
+{
+  "email": "{{registerAdmin.response.body.email}}",
+  "password": "password"
+}
+
+### GET ALL USERS *ADMIN*
+GET {{BASE_URL}}/users?role=admin
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### GET ALL USERS BY LOCATION *ADMIN*
+GET {{BASE_URL}}/users?role=admin&location=barcelona
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### GET ALL USERS BY SKILL *ADMIN*
+GET {{BASE_URL}}/users?role=admin&skill=malabars
+Authorization: Bearer {{loginAdmin.response.body.token}}

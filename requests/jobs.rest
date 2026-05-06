@@ -1,0 +1,65 @@
+@BASE_URL = http://localhost:3000/api
+
+### GET ALL JOBS
+GET {{BASE_URL}}/jobs
+
+### SEARCH JOBS
+GET {{BASE_URL}}/jobs?search=show
+
+### SEARCH JOBS BY LOCATION
+GET {{BASE_URL}}/jobs?location=barcelona
+
+### SEARCH JOBS BY CONTRACT TYPE
+GET {{BASE_URL}}/jobs?contractType=fijo
+
+### SEARCH JOBS BY SKILLS
+GET {{BASE_URL}}/jobs?skills=malabares&skills=rigging
+
+### REGISTER A COMPANY BEFORE TO CREATE A JOB
+# @name register
+POST {{BASE_URL}}/companies/register
+Content-Type: application/json
+
+{
+  "name": "Tech Corp",
+  "email": "techcorp@example.com",
+  "password": "password",
+  "role": "company"
+}
+
+### LOGIN
+# @name login
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "techcorp@example.com",
+  "password": "password"
+}
+
+### CREATE JOB
+# @name createJob
+POST {{BASE_URL}}/jobs
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "title": "Junior Software Engineer",
+  "description": "We are looking for a skilled software engineer to join our team.",
+  "location": "New York",
+  "contractType": "fijo",
+  "skillsRequired": ["JavaScript", "Python", "React"]
+}
+
+### UPDATE JOB
+PUT {{BASE_URL}}/jobs/{{createJob.response.body._id}}
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "title": "Senior Software Engineer"
+}
+
+### DELETE JOB
+DELETE {{BASE_URL}}/jobs/{{createJob.response.body._id}}
+Authorization: Bearer {{login.response.body.token}}

@@ -1,0 +1,42 @@
+@BASE_URL = http://localhost:3000/api
+
+### REGISTER A COMPANY
+# @name register
+POST {{BASE_URL}}/companies/register
+Content-Type: application/json
+
+{
+  "name": "Tech Company",
+  "email": "techcompany@mail.com",
+  "password": "password"
+}
+
+### LOGIN A COMPANY
+# @name login
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "techcompany@mail.com",
+  "password": "password"
+}
+
+### GET MY USER
+GET {{BASE_URL}}/companies/me
+Authorization: Bearer {{login.response.body.token}}
+
+### GET USER BY USERNAME
+GET {{BASE_URL}}/companies/{{login.response.body.username}}
+Authorization: Bearer {{login.response.body.token}}
+
+### UPDATE USER
+PUT {{BASE_URL}}/companies/me
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "name": "Tech Company 3",
+  "email": "techcompany3@mail.com"
+}
+
+### TODO: updateMyUsername, deleteMyUser
