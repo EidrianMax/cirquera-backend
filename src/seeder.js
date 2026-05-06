@@ -311,6 +311,8 @@ const destroyData = async () => {
     await Job.deleteMany()
     await Post.deleteMany()
     await Application.deleteMany()
+    await Category.deleteMany()
+    await Report.deleteMany()
 
     console.log('🗑️ Datos eliminados correctamente')
   } catch (error) {

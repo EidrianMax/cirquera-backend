@@ -30,6 +30,12 @@ export const createPost = async (req, res) => {
 
     const result = await uploadFromBuffer()
 
+    if (!author || !content || !content.trim()) {
+      return res.status(400).json({ message: 'Missing data' })
+    }
+    if (!author) {
+      return res.status(400).json({ message: 'Missing author' })
+    }
     const post = await Post.create({
       author,
       content: content.trim(),
