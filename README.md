@@ -88,3 +88,54 @@ Subida de archivos a la carpeta `uploads/`.
 - **Hasheo:** Las contraseñas están protegidas con `bcryptjs`.
 - **Media:** La carpeta `uploads/` se sirve estáticamente para acceder a las fotos y vídeos.
 - **Middleware:** Las rutas privadas están protegidas por el middleware `protect`.
+
+## 🛡️ Panel de Administración (`/admin`)
+
+Endpoints añadidos para que el frontend Laravel pueda consumir el panel admin sin acceder directamente a MongoDB. Todas las rutas, salvo el login admin, requieren `Authorization: Bearer <token>` de un usuario con `role: "admin"`.
+
+### Autenticación admin
+
+- `POST /api/admin/auth/login`: Login exclusivo para cuentas de usuario con rol `admin`.
+
+### Dashboard
+
+- `GET /api/admin/dashboard`: Métricas agregadas de cuentas, empresas, ofertas, publicaciones, aplicaciones, reportes y categorías.
+
+### Usuarios / cuentas
+
+- `GET /api/admin/users`: Lista paginada de talentos, admins y compañías. Filtros: `role`, `status`, `q`, `page`, `limit`.
+- `GET /api/admin/users/export`: Exportación CSV de cuentas.
+- `POST /api/admin/users`: Crea talento, admin o compañía según `role`.
+- `GET /api/admin/users/:id`: Detalle de una cuenta.
+- `PUT|PATCH /api/admin/users/:id`: Actualiza una cuenta.
+- `PATCH /api/admin/users/:id/status`: Suspende/reactiva una cuenta; acepta `status` o alterna si no se envía.
+- `DELETE /api/admin/users/:id`: Elimina una cuenta. No permite eliminar el propio admin autenticado.
+
+### Ofertas
+
+- `GET /api/admin/jobs`: Lista paginada de ofertas. Filtros: `status`, `q`, `page`, `limit`.
+- `POST /api/admin/jobs`: Crea una oferta; `status: approved` activa la oferta automáticamente.
+- `GET /api/admin/jobs/:id`: Detalle de una oferta.
+- `PUT|PATCH /api/admin/jobs/:id`: Actualiza una oferta.
+- `PATCH /api/admin/jobs/:id/status`: Cambia el estado `pending|approved|rejected` y sincroniza `isActive`.
+- `DELETE /api/admin/jobs/:id`: Elimina una oferta.
+
+### Reportes y moderación
+
+- `GET /api/admin/reports`: Lista reportes. Filtro: `status`.
+- `POST /api/admin/reports`: Crea un reporte sobre `user`, `company`, `job` o `post`.
+- `PATCH /api/admin/reports/:id/resolve`: Cierra un reporte como `resolved` o `dismissed`.
+- `DELETE /api/admin/reports/:id/target`: Aplica la acción de moderación sobre el objetivo del reporte.
+- `DELETE /api/admin/reports/:id`: Elimina un reporte.
+
+### Categorías y habilidades
+
+- `GET /api/admin/categories`: Lista categorías e incluye `allSkills` y `skillUsage`.
+- `POST /api/admin/categories`: Crea una categoría.
+- `GET /api/admin/categories/:id`: Detalle de categoría.
+- `PUT|PATCH /api/admin/categories/:id`: Actualiza categoría.
+- `DELETE /api/admin/categories/:id`: Elimina categoría.
+- `POST /api/admin/categories/:id/skills`: Añade habilidad.
+- `DELETE /api/admin/categories/:id/skills/:skill`: Elimina habilidad.
+
+También se han añadido alias en español para facilitar la conexión con las rutas actuales del panel: `/usuarios`, `/ofertas`, `/reportes`, `/categorias`, `/estado`, `/resolver`, `/objetivo` y `/habilidades` bajo `/api/admin`.

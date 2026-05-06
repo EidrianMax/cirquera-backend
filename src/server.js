@@ -16,6 +16,7 @@ import followRoutes from './routes/followRoutes.js'
 import chatRoutes from './routes/chatRoutes.js'
 import notificationRoutes from './routes/notificationRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 import cloudinary from 'cloudinary'
 
@@ -53,6 +54,7 @@ app.use('/api/follows', followRoutes)
 app.use('/api/chats', chatRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/upload', uploadRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.use(notFound)
 app.use(errorHandler)
