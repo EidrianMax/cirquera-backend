@@ -1,6 +1,7 @@
 import express from 'express'
 import {
   createJob,
+  getMyCompanyJobs,
   getJobs,
   getJobById,
   updateJob,
@@ -11,6 +12,7 @@ import { protect } from '../middleware/authMiddleware.js'
 const router = express.Router()
 
 router.post('/', protect, createJob)
+router.get('/company/me', protect, getMyCompanyJobs)
 router.get('/', getJobs)
 router.get('/:id', getJobById)
 router.put('/:id', protect, updateJob)

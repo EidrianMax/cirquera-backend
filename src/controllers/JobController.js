@@ -19,6 +19,10 @@ const getTalentIdFromRequest = (req) => {
 
 export const createJob = async (req, res) => {
   try {
+    if (req.authType !== 'company') {
+      return res.status(403).json({ message: 'Only companies can create jobs' })
+    }
+
     const {
       title,
       description,
@@ -37,6 +41,22 @@ export const createJob = async (req, res) => {
     })
 
     res.status(201).json(job)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+export const getMyCompanyJobs = async (req, res) => {
+  try {
+    if (req.authType !== 'company') {
+      return res.status(403).json({ message: 'Only companies can view their jobs' })
+    }
+
+    const jobs = await Job.find({ company: req.user.id })
+      .populate('company', 'name username logo location')
+      .sort({ createdAt: -1 })
+
+    res.json(jobs)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

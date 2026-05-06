@@ -55,7 +55,7 @@ export const getApplications = async (req, res) => {
 
     const applications = await Application.find(query)
       .populate('job', 'title')
-      .populate('talent', 'name avatar skills')
+      .populate('talent', 'firstName lastName username avatar skills jobTitle')
     res.json(applications)
   } catch (error) {
     res.status(500).json({ message: error.message })
