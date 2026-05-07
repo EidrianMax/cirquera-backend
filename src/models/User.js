@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema({
 
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-
   username: { type: String, required: true, unique: true },
 
   previousUsernames: {
@@ -37,22 +36,15 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
 
-
   status: {
     type: String,
     enum: ['active', 'suspended'],
     default: 'active'
   },
 
-  avatar: String,
-
   jobTitle: String,
 
-  avatar: {
-    filename: String,
-    path: String,
-    uploadedAt: { type: Date, default: Date.now }
-  },
+  avatar: String,
 
   location: String,
   bio: String,
