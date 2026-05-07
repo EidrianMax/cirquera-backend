@@ -17,6 +17,7 @@ import chatRoutes from './routes/chatRoutes.js'
 import notificationRoutes from './routes/notificationRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
+import profileRoutes from './routes/profileRoutes.js'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 import cloudinary from 'cloudinary'
 
@@ -46,6 +47,7 @@ app.get('/api', (req, res) => res.send('API is running... 🚀'))
 // Routes
 app.use('/api/users', userRoutes)
 app.use('/api/companies', companyRoutes)
+app.use('/api/profiles', profileRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/jobs', jobRoutes)
 app.use('/api/posts', postRoutes)

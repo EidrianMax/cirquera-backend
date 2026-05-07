@@ -6,24 +6,24 @@ import jwt from 'jsonwebtoken'
 export const buildProfile = async (myId, entityId, entityType) => {
   const [followersCount, followingCount, isFollowing, isPending] = await Promise.all([
     Follow.countDocuments({
-      following: entityId,
+      'following.refId': entityId,
       status: 'accepted'
     }),
 
     Follow.countDocuments({
-      follower: entityId,
+      'follower.refId': entityId,
       status: 'accepted'
     }),
 
     Follow.exists({
-      follower: myId,
-      following: entityId,
+      'follower.refId': myId,
+      'following.refId': entityId,
       status: 'accepted'
     }),
 
     Follow.exists({
-      follower: myId,
-      following: entityId,
+      'follower.refId': myId,
+      'following.refId': entityId,
       status: 'pending'
     })
   ])
@@ -50,12 +50,12 @@ export const generateUsername = async (firstName, lastName) => {
     .replace(/^-|-$/g, '')
 
   let username = base
-  let exists = await User.findOne({ username })
+  let exists = await usernameExists(username)
 
   let i = 1
   while (exists) {
     username = `${base}-${i}`
-    exists = await User.findOne({ username })
+    exists = await usernameExists(username)
     i++
   }
 
@@ -71,16 +71,25 @@ export const generateCompanyUsername = async (name) => {
     .replace(/^-|-$/g, '')
 
   let username = base
-  let exists = await Company.findOne({ username })
+  let exists = await usernameExists(username)
 
   let i = 1
   while (exists) {
     username = `${base}-${i}`
-    exists = await Company.findOne({ username })
+    exists = await usernameExists(username)
     i++
   }
 
   return username
+}
+
+const usernameExists = async (username) => {
+  const [user, company] = await Promise.all([
+    User.exists({ username }),
+    Company.exists({ username })
+  ])
+
+  return !!user || !!company
 }
 
 export const generateToken = (id, type) => {

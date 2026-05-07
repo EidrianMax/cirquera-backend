@@ -17,6 +17,12 @@ const portfolioItemSchema = new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now }
 }, { _id: true })
 
+const imageSchema = new mongoose.Schema({
+  filename: String,
+  path: String,
+  uploadedAt: { type: Date, default: Date.now }
+}, { _id: false })
+
 const userSchema = new mongoose.Schema({
   role: {
     type: String,
@@ -44,7 +50,7 @@ const userSchema = new mongoose.Schema({
 
   jobTitle: String,
 
-  avatar: String,
+  avatar: imageSchema,
 
   location: String,
   bio: String,

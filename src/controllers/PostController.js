@@ -7,7 +7,8 @@ import streamifier from 'streamifier'
 // @route   POST /api/posts
 export const createPost = async (req, res) => {
   try {
-    const author = req.user
+    const author = req.user?._id
+    const authorModel = req.authType === 'company' ? 'Company' : 'User'
     const { content } = req.body
     const file = req.file
 
@@ -47,6 +48,7 @@ export const createPost = async (req, res) => {
 
     const post = await Post.create({
       author,
+      authorModel,
       content: content.trim(),
       media
     })
@@ -65,7 +67,7 @@ export const getPosts = async (req, res) => {
     const posts = await Post.find()
       .populate({
         path: 'author',
-        select: 'firstName lastName name username logo'
+        select: 'firstName lastName name username avatar logo'
       })
       .sort({ createdAt: -1 })
     res.json(posts)

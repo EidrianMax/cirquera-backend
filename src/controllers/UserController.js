@@ -1,4 +1,5 @@
 import User from '../models/User.js'
+import Company from '../models/Company.js'
 import { generateUsername, buildProfile } from './utils.js'
 
 // @desc    Get users with filters
@@ -34,6 +35,16 @@ export const registerUser = async (req, res) => {
   try {
     const { role, firstName, lastName, email, password } = req.body
 
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({
+        message: 'firstName, lastName, email and password are required'
+      })
+    }
+
+    if (role && role !== 'talent' && role !== 'admin') {
+      return res.status(400).json({ message: 'Invalid role' })
+    }
+
     const userExists = await User.findOne({ email })
 
     if (userExists) {
@@ -43,7 +54,7 @@ export const registerUser = async (req, res) => {
     const username = await generateUsername(firstName, lastName)
 
     const user = await User.create({
-      role,
+      role: role || 'talent',
       firstName,
       lastName,
       email,
@@ -57,7 +68,8 @@ export const registerUser = async (req, res) => {
       lastName: user.lastName,
       username: user.username,
       email: user.email,
-      role: user.role
+      role: user.role,
+      type: 'user'
     })
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -79,6 +91,7 @@ export const getMyUser = async (req, res) => {
     const profile = await buildProfile(myId, user._id, 'User')
 
     res.json({
+      type: 'user',
       user,
       ...profile
     })
@@ -103,6 +116,7 @@ export const getUserByUsername = async (req, res) => {
     const profile = await buildProfile(myId, user._id, 'User')
 
     res.json({
+      type: 'user',
       user,
       ...profile
     })
@@ -150,7 +164,12 @@ export const updateMyUsername = async (req, res) => {
     }
 
     // comprobar si está en uso
-    const exists = await User.findOne({ username: newUsername })
+    const [userExists, companyExists] = await Promise.all([
+      User.findOne({ username: newUsername, _id: { $ne: userId } }),
+      Company.findOne({ username: newUsername })
+    ])
+
+    const exists = userExists || companyExists
     if (exists) {
       return res.status(400).json({ message: 'Username already taken' })
     }

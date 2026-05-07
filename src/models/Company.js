@@ -1,12 +1,18 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 
+const imageSchema = new mongoose.Schema({
+  filename: String,
+  path: String,
+  uploadedAt: { type: Date, default: Date.now }
+}, { _id: false })
+
 const companySchema = new mongoose.Schema({
   name: { type: String, required: true },
   username: { type: String, required: true, unique: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  logo: String,
+  logo: imageSchema,
   location: String,
   description: String,
   industry: String,
