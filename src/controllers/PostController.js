@@ -1,7 +1,98 @@
 import Post from '../models/Post.js'
-import { createNotification } from './NotificationController.js'
+import Company from '../models/Company.js'
+import User from '../models/User.js'
 import cloudinary from 'cloudinary'
 import streamifier from 'streamifier'
+
+const getAuthRef = (req) => ({
+  refType: req.authType === 'company' ? 'Company' : 'User',
+  refId: req.user._id
+})
+
+const isSameRef = (left, right) =>
+  left?.refType === right?.refType &&
+  left?.refId?.toString() === right?.refId?.toString()
+
+const getModelByType = (type) => type === 'Company' ? Company : User
+
+const normalizePostAuthor = (author, authorModel) => {
+  if (!author) return author
+
+  const normalizedAuthor = author.toObject ? author.toObject() : author
+  const displayName =
+    normalizedAuthor.name ||
+    [normalizedAuthor.firstName, normalizedAuthor.lastName].filter(Boolean).join(' ') ||
+    normalizedAuthor.username ||
+    'Perfil'
+
+  return {
+    ...normalizedAuthor,
+    displayName,
+    profileImage: authorModel === 'Company'
+      ? normalizedAuthor.logo
+      : normalizedAuthor.avatar
+  }
+}
+
+const normalizeAccount = (account, type) => {
+  if (!account) return null
+
+  const raw = account.toObject ? account.toObject() : account
+  const displayName =
+    raw.name ||
+    [raw.firstName, raw.lastName].filter(Boolean).join(' ') ||
+    raw.username ||
+    'Perfil'
+
+  return {
+    _id: raw._id,
+    type: type === 'Company' ? 'company' : 'user',
+    username: raw.username,
+    displayName,
+    image: type === 'Company' ? raw.logo : raw.avatar
+  }
+}
+
+const findAccountByRef = async (ref) => {
+  if (!ref?.refType || !ref?.refId) return null
+
+  const account = await getModelByType(ref.refType)
+    .findById(ref.refId)
+    .select('firstName lastName name username avatar logo')
+
+  return normalizeAccount(account, ref.refType)
+}
+
+const populatePostAuthor = (query) =>
+  query.populate({
+    path: 'author',
+    select: 'firstName lastName name username avatar logo jobTitle role'
+  })
+
+const normalizePost = async (post, viewerRef = null) => {
+  const normalizedPost = post.toObject ? post.toObject() : post
+  const likes = normalizedPost.likes || []
+  const comments = normalizedPost.comments || []
+
+  normalizedPost.author = normalizePostAuthor(
+    normalizedPost.author,
+    normalizedPost.authorModel
+  )
+  normalizedPost.likesCount = likes.length
+  normalizedPost.commentsCount = comments.length
+  normalizedPost.sharesCount = 0
+  normalizedPost.isLiked = viewerRef
+    ? likes.some((like) => isSameRef(like, viewerRef))
+    : false
+  normalizedPost.comments = await Promise.all(
+    comments.map(async (comment) => ({
+      ...comment,
+      author: await findAccountByRef(comment.author)
+    }))
+  )
+
+  return normalizedPost
+}
 
 // @desc    Create a new post
 // @route   POST /api/posts
@@ -53,7 +144,9 @@ export const createPost = async (req, res) => {
       media
     })
 
-    res.status(201).json(post)
+    const populatedPost = await populatePostAuthor(Post.findById(post._id))
+
+    res.status(201).json(await normalizePost(populatedPost, getAuthRef(req)))
   } catch (error) {
     console.log('❌ CREATE POST ERROR:', error)
     res.status(500).json({ message: error.message })
@@ -64,13 +157,14 @@ export const createPost = async (req, res) => {
 // @route   GET /api/posts
 export const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find()
-      .populate({
-        path: 'author',
-        select: 'firstName lastName name username avatar logo'
-      })
+    const posts = await populatePostAuthor(Post.find())
       .sort({ createdAt: -1 })
-    res.json(posts)
+
+    const normalizedPosts = await Promise.all(
+      posts.map((post) => normalizePost(post, getAuthRef(req)))
+    )
+
+    res.json(normalizedPosts)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -81,10 +175,9 @@ export const getPosts = async (req, res) => {
 export const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'firstName lastName avatar')
-      .populate('comments.user', 'firstName lastName avatar')
+      .populate('author', 'firstName lastName name username avatar logo jobTitle role')
     if (post) {
-      res.json(post)
+      res.json(await normalizePost(post, req.user ? getAuthRef(req) : null))
     } else {
       res.status(404).json({ message: 'Post not found' })
     }
@@ -100,27 +193,19 @@ export const likePost = async (req, res) => {
     const post = await Post.findById(req.params.id)
     if (!post) return res.status(404).json({ message: 'Post not found' })
 
-    const userId = req.body.userId
-    const alreadyLiked = post.likes.includes(userId)
+    const viewerRef = getAuthRef(req)
+    const alreadyLiked = post.likes.some((like) => isSameRef(like, viewerRef))
 
     if (alreadyLiked) {
-      post.likes = post.likes.filter(id => id.toString() !== userId)
+      post.likes = post.likes.filter((like) => !isSameRef(like, viewerRef))
     } else {
-      post.likes.push(userId)
+      post.likes.push(viewerRef)
     }
 
     await post.save()
 
-    if (!alreadyLiked) {
-      await createNotification({
-        user: post.author,
-        type: 'newLike',
-        fromUser: userId,
-        relatedPost: post._id
-      })
-    }
-
-    res.json(post)
+    const populatedPost = await populatePostAuthor(Post.findById(post._id))
+    res.json(await normalizePost(populatedPost, viewerRef))
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -133,13 +218,22 @@ export const addComment = async (req, res) => {
     const post = await Post.findById(req.params.id)
     if (!post) return res.status(404).json({ message: 'Post not found' })
 
-    const { user, comment } = req.body
-    const newComment = { user, comment }
+    const { comment } = req.body
+
+    if (!comment || !comment.trim()) {
+      return res.status(400).json({ message: 'Comment is required' })
+    }
+
+    const newComment = {
+      author: getAuthRef(req),
+      comment: comment.trim()
+    }
 
     post.comments.push(newComment)
     await post.save()
 
-    res.status(201).json(post)
+    const populatedPost = await populatePostAuthor(Post.findById(post._id))
+    res.status(201).json(await normalizePost(populatedPost, getAuthRef(req)))
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

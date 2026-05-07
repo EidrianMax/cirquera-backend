@@ -6,23 +6,27 @@ import jwt from 'jsonwebtoken'
 export const buildProfile = async (myId, entityId, entityType) => {
   const [followersCount, followingCount, isFollowing, isPending] = await Promise.all([
     Follow.countDocuments({
+      'following.refType': entityType,
       'following.refId': entityId,
       status: 'accepted'
     }),
 
     Follow.countDocuments({
+      'follower.refType': entityType,
       'follower.refId': entityId,
       status: 'accepted'
     }),
 
     Follow.exists({
       'follower.refId': myId,
+      'following.refType': entityType,
       'following.refId': entityId,
       status: 'accepted'
     }),
 
     Follow.exists({
       'follower.refId': myId,
+      'following.refType': entityType,
       'following.refId': entityId,
       status: 'pending'
     })

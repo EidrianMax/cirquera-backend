@@ -1,7 +1,19 @@
 import mongoose from 'mongoose'
 
+const accountRefSchema = new mongoose.Schema({
+  refType: {
+    type: String,
+    enum: ['User', 'Company'],
+    required: true
+  },
+  refId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  }
+}, { _id: false })
+
 const commentSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  author: { type: accountRefSchema, required: true },
   comment: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 }, { _id: true })
@@ -35,7 +47,7 @@ const postSchema = new mongoose.Schema({
     uploadedAt: { type: Date, default: Date.now }
   },
   uploadedAt: { type: Date, default: Date.now },
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  likes: [accountRefSchema],
   comments: [commentSchema],
   createdAt: { type: Date, default: Date.now }
 }, { timestamps: true })

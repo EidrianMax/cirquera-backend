@@ -30,4 +30,11 @@ const followSchema = new mongoose.Schema({
   }
 }, { timestamps: true })
 
+followSchema.index({
+  'follower.refType': 1,
+  'follower.refId': 1,
+  'following.refType': 1,
+  'following.refId': 1
+}, { unique: true })
+
 export default mongoose.model('Follow', followSchema)

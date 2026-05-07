@@ -1,15 +1,75 @@
 import Follow from '../models/Follow.js'
+import Company from '../models/Company.js'
 import User from '../models/User.js'
-import { createNotification } from './NotificationController.js'
+
+const toModelType = (type) => {
+  if (type === 'user') return 'User'
+  if (type === 'company') return 'Company'
+  return type
+}
+
+const getAuthRef = (req) => ({
+  refType: req.authType === 'company' ? 'Company' : 'User',
+  refId: req.user._id
+})
+
+const getModel = (type) => toModelType(type) === 'Company' ? Company : User
+
+const formatAccount = (account, type) => {
+  const raw = account.toObject ? account.toObject() : account
+  const displayName =
+    raw.name ||
+    [raw.firstName, raw.lastName].filter(Boolean).join(' ') ||
+    raw.username ||
+    'Perfil'
+
+  return {
+    _id: raw._id,
+    type: toModelType(type) === 'Company' ? 'company' : 'user',
+    username: raw.username,
+    displayName,
+    location: raw.location,
+    image: toModelType(type) === 'Company' ? raw.logo : raw.avatar
+  }
+}
+
+const findAccount = async (ref) => {
+  const Model = getModel(ref.refType)
+  const account = await Model.findById(ref.refId).select('firstName lastName name username avatar logo location')
+  if (!account) return null
+  return formatAccount(account, ref.refType)
+}
 
 // @desc    Follow a user
 // @route   POST /api/follows
 export const follow = async (req, res) => {
   try {
-    const { follower, following } = req.body
+    const follower = getAuthRef(req)
+    const following = {
+      refType: toModelType(req.body.following?.refType),
+      refId: req.body.following?.refId
+    }
+
+    if (!following.refType || !following.refId) {
+      return res.status(400).json({ message: 'Following profile is required' })
+    }
+
+    if (
+      follower.refType === following.refType &&
+      follower.refId.toString() === following.refId.toString()
+    ) {
+      return res.status(400).json({ message: 'You cannot follow yourself' })
+    }
+
+    const target = await getModel(following.refType).findById(following.refId)
+    if (!target) {
+      return res.status(404).json({ message: 'Profile not found' })
+    }
 
     const exists = await Follow.findOne({
+      'follower.refType': follower.refType,
       'follower.refId': follower.refId,
+      'following.refType': following.refType,
       'following.refId': following.refId
     })
 
@@ -20,13 +80,7 @@ export const follow = async (req, res) => {
     const follow = await Follow.create({
       follower,
       following,
-      status: 'pending'
-    })
-
-    await createNotification({
-      user: following.refId,
-      type: 'newFollower',
-      fromUser: follower.refId
+      status: 'accepted'
     })
 
     res.status(201).json(follow)
@@ -45,9 +99,6 @@ export const acceptFollowRequest = async (req, res) => {
     follow.status = 'accepted'
     await follow.save()
 
-    await User.findByIdAndUpdate(follow.following, { $addToSet: { followers: follow.follower } })
-    await User.findByIdAndUpdate(follow.follower, { $addToSet: { following: follow.following } })
-
     res.json(follow)
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -55,14 +106,20 @@ export const acceptFollowRequest = async (req, res) => {
 }
 
 // @desc    Unfollow a user
-// @route   DELETE /api/follows/:id
+// @route   DELETE /api/follows/:entityType/:entityId
 export const unfollow = async (req, res) => {
   try {
-    const { followerId, followingId } = req.body
+    const follower = getAuthRef(req)
+    const following = {
+      refType: toModelType(req.params.entityType),
+      refId: req.params.entityId
+    }
 
     await Follow.findOneAndDelete({
-      'follower.refId': followerId,
-      'following.refId': followingId
+      'follower.refType': follower.refType,
+      'follower.refId': follower.refId,
+      'following.refType': following.refType,
+      'following.refId': following.refId
     })
 
     res.json({ message: 'Unfollowed' })
@@ -72,19 +129,33 @@ export const unfollow = async (req, res) => {
 }
 
 // @desc    Get followers/following list
-// @route   GET /api/follows/:userId
+// @route   GET /api/follows/:entityType/:entityId/:listType
 export const getFollows = async (req, res) => {
   try {
-    const { userId, type } = req.params
+    const { entityId, listType } = req.params
+    const entityType = toModelType(req.params.entityType)
 
     const query =
-      type === 'followers'
-        ? { 'following.refId': userId, status: 'accepted' }
-        : { 'follower.refId': userId, status: 'accepted' }
+      listType === 'followers'
+        ? {
+            'following.refType': entityType,
+            'following.refId': entityId,
+            status: 'accepted'
+          }
+        : {
+            'follower.refType': entityType,
+            'follower.refId': entityId,
+            status: 'accepted'
+          }
 
     const follows = await Follow.find(query)
+    const refs = follows.map((follow) =>
+      listType === 'followers' ? follow.follower : follow.following
+    )
 
-    res.json(follows)
+    const accounts = await Promise.all(refs.map(findAccount))
+
+    res.json(accounts.filter(Boolean))
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
