@@ -63,7 +63,10 @@ export const createPost = async (req, res) => {
 export const getPosts = async (req, res) => {
   try {
     const posts = await Post.find()
-      .populate('author', 'firstName lastName avatar')
+      .populate({
+        path: 'author',
+        select: 'firstName lastName name username logo'
+      })
       .sort({ createdAt: -1 })
     res.json(posts)
   } catch (error) {

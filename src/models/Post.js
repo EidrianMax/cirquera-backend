@@ -7,7 +7,16 @@ const commentSchema = new mongoose.Schema({
 }, { _id: true })
 
 const postSchema = new mongoose.Schema({
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    refPath: 'authorModel'
+  },
+  authorModel: {
+    type: String,
+    enum: ['User', 'Company'],
+    required: true
+  },
   content: { type: String, required: true },
   media: {
     path: {

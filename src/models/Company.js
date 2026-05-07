@@ -6,11 +6,7 @@ const companySchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  logo: {
-    filename: String,
-    path: String,
-    uploadedAt: { type: Date, default: Date.now }
-  },
+  logo: String,
   location: String,
   description: String,
   industry: String,

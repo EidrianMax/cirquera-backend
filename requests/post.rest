@@ -1,6 +1,7 @@
 @BASE_URL = http://localhost:3000/api
 
-### REGISTER A TALENT BEFORE TO CREATE A POST
+### TALENT ###
+### REGISTER BEFORE TO CREATE A POST
 # @name register
 
 POST {{BASE_URL}}/users/register
@@ -75,3 +76,37 @@ GET {{BASE_URL}}/posts
 
 ### GET POSTS BY ID
 GET {{BASE_URL}}/posts/{{createPost.response.body._id}}
+
+
+### COMPANY ###
+### REGISTER BEFORE TO CREATE A POST
+# @name registerCompany
+POST {{BASE_URL}}/companies/register
+Content-Type: application/json
+
+{
+  "name": "Tech Company",
+  "email": "techcompany@mail.com",
+  "password": "password"
+}
+
+### LOGIN
+# @name loginCompany
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "techcompany@mail.com",
+  "password": "password"
+}
+
+### CREATE POST WITH ONLY CONTENT
+# @name createPost
+POST {{BASE_URL}}/posts
+Content-Type: application/json
+Authorization: Bearer {{loginCompany.response.body.token}}
+
+{
+  "author": "{{loginCompany.response.body.user._id}}",
+  "content": "We are looking for a talented software engineer to join our team. The ideal candidate should have experience with JavaScript, Node.js, and React. Responsibilities include developing and maintaining web applications, collaborating with cross-functional teams, and participating in code reviews. If you are passionate about technology and eager to work in a dynamic environment, we would love to hear from you!"
+}
