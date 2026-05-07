@@ -3,30 +3,32 @@ import Follow from '../models/Follow.js'
 import User from '../models/User.js'
 import jwt from 'jsonwebtoken'
 
-export const buildProfile = async (myId, entityId, entityType) => {
-  const [followersCount, followingCount, isFollowing, isPending] = await Promise.all([
+const normalizeEntityType = (type) => type === 'company' ? 'Company' : type === 'user' ? 'User' : type
+
+export const buildProfile = async (myId, entityId, entityType, myEntityType = 'User') => {
+  const targetType = normalizeEntityType(entityType)
+  const viewerType = normalizeEntityType(myEntityType)
+  const [followersCount, followingCount, relationship] = await Promise.all([
     Follow.countDocuments({
-      following: entityId,
+      'following.refType': targetType,
+      'following.refId': entityId,
       status: 'accepted'
     }),
 
     Follow.countDocuments({
-      follower: entityId,
+      'follower.refType': targetType,
+      'follower.refId': entityId,
       status: 'accepted'
     }),
 
-    Follow.exists({
-      follower: myId,
-      following: entityId,
-      status: 'accepted'
-    }),
-
-    Follow.exists({
-      follower: myId,
-      following: entityId,
-      status: 'pending'
+    Follow.findOne({
+      'follower.refType': viewerType,
+      'follower.refId': myId,
+      'following.refType': targetType,
+      'following.refId': entityId
     })
   ])
+  const isOwnProfile = viewerType === targetType && myId.toString() === entityId.toString()
 
   return {
     stats: {
@@ -34,9 +36,10 @@ export const buildProfile = async (myId, entityId, entityType) => {
       following: followingCount
     },
     relationship: {
-      isFollowing: !!isFollowing,
-      isPending: !!isPending,
-      isOwnProfile: myId.toString() === entityId.toString()
+      followId: relationship?._id || null,
+      isFollowing: relationship?.status === 'accepted',
+      isPending: relationship?.status === 'pending',
+      isOwnProfile
     }
   }
 }

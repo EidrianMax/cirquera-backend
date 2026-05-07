@@ -63,7 +63,7 @@ export const getCompanyByUsername = async (req, res) => {
       return res.status(404).json({ message: 'Company not found' })
     }
 
-    const profile = await buildProfile(myId, company._id, 'Company')
+    const profile = await buildProfile(myId, company._id, 'Company', req.authType)
 
     res.json({
       company,
