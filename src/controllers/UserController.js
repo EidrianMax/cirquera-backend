@@ -76,7 +76,7 @@ export const getMyUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    const profile = await buildProfile(myId, user._id, 'User')
+    const profile = await buildProfile(myId, user._id, 'User', req.authType)
 
     res.json({
       user,
@@ -100,7 +100,7 @@ export const getUserByUsername = async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    const profile = await buildProfile(myId, user._id, 'User')
+    const profile = await buildProfile(myId, user._id, 'User', req.authType)
 
     res.json({
       user,
