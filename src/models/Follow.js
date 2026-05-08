@@ -2,7 +2,6 @@ import mongoose from 'mongoose'
 
 const followSchema = new mongoose.Schema({
   follower: { // quien sigue
-    type: mongoose.Schema.Types.ObjectId,
     refType: {
       type: String,
       enum: ['User', 'Company'],
@@ -11,11 +10,9 @@ const followSchema = new mongoose.Schema({
     refId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true
-    },
-    required: true
+    }
   },
   following: { // a quien sigue
-    type: mongoose.Schema.Types.ObjectId,
     refType: {
       type: String,
       enum: ['User', 'Company'],
@@ -24,8 +21,7 @@ const followSchema = new mongoose.Schema({
     refId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true
-    },
-    required: true
+    }
   },
   status: {
     type: String,
@@ -33,5 +29,12 @@ const followSchema = new mongoose.Schema({
     default: 'pending'
   }
 }, { timestamps: true })
+
+followSchema.index({
+  'follower.refType': 1,
+  'follower.refId': 1,
+  'following.refType': 1,
+  'following.refId': 1
+}, { unique: true })
 
 export default mongoose.model('Follow', followSchema)
