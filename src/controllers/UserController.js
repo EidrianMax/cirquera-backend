@@ -82,7 +82,7 @@ export const getMyUser = async (req, res) => {
   try {
     const myId = req.user.id
 
-    const user = await User.findById(myId).select('-password')
+    const user = await User.findById(myId)
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
@@ -91,8 +91,7 @@ export const getMyUser = async (req, res) => {
     const profile = await buildProfile(myId, user._id, 'User')
 
     res.json({
-      type: 'user',
-      user,
+      user: { ...user.toJSON(), type: 'user' },
       ...profile
     })
   } catch (error) {

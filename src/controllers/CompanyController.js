@@ -54,8 +54,7 @@ export const getMyCompany = async (req, res) => {
     const profile = await buildProfile(myId, company._id, 'Company')
 
     res.json({
-      type: 'company',
-      company,
+      user: { ...company.toJSON(), type: 'company' },
       ...profile
     })
   } catch (error) {
