@@ -2,8 +2,14 @@ import mongoose from 'mongoose'
 
 const chatSchema = new mongoose.Schema({
   participants: [{
-    type: mongoose.Schema.Types.Mixed,
-    required: true
+    refType: {
+      type: String,
+      required: true
+    },
+    refId: {
+      type: String,
+      required: true
+    }
   }],
 
   lastMessage: {

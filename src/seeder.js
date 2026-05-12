@@ -33,7 +33,11 @@ const importData = async () => {
         email: 'albert@cirquera.com',
         password: await hash('password'),
         location: 'Barcelona',
-        bio: 'Administrador de Cirquera'
+        bio: 'Administrador de Cirquera',
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/300?u=Albert'
+        }
       },
       {
         role: 'admin',
@@ -55,7 +59,11 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Barcelona',
         bio: 'Malabarista profesional especializado en bolas y fuego',
-        skills: ['Malabares', 'Fuego', 'Clown']
+        skills: ['Malabares', 'Fuego', 'Clown'],
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/300?u=Joan'
+        }
       },
       {
         role: 'talent',
@@ -77,7 +85,11 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Madrid',
         bio: 'Acróbata de suelo y portés',
-        skills: ['Acrobacia', 'Equilibrio']
+        skills: ['Acrobacia', 'Equilibrio'],
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/300?u=Carlos'
+        }
       },
       {
         role: 'talent',
@@ -99,7 +111,11 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Barcelona',
         bio: 'Malabarista técnico con 7 objetos',
-        skills: ['Malabares', 'Diábolo']
+        skills: ['Malabares', 'Diábolo'],
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/300?u=David'
+        }
       },
       {
         role: 'talent',
@@ -121,7 +137,11 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Valencia',
         bio: 'Técnico de rigging y estructuras aéreas',
-        skills: ['Rigging', 'Seguridad']
+        skills: ['Rigging', 'Seguridad'],
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/300?u=Pablo'
+        }
       },
       {
         role: 'talent',
@@ -148,7 +168,11 @@ const importData = async () => {
         location: 'Barcelona',
         description: 'Compañía histórica de circo clásico',
         industry: 'Circus',
-        website: 'https://raluy.com'
+        website: 'https://raluy.com',
+        logo: {
+          filename: 'circ-raluy_f46ks0',
+          path: 'https://res.cloudinary.com/dgeyud92z/image/upload/v1778582494/circ-raluy_f46ks0.jpg'
+        }
       },
       {
         name: 'Cirque du Soleil España',
@@ -157,7 +181,11 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Madrid',
         description: 'Producciones internacionales de circo contemporáneo',
-        industry: 'Entertainment'
+        industry: 'Entertainment',
+        logo: {
+          filename: 'cirque-du-soleil_q9mh8u',
+          path: 'https://res.cloudinary.com/dgeyud92z/image/upload/v1778583946/cirque-du-soleil_q9mh8u.jpg'
+        }
       },
       {
         name: 'Circ Cric',
@@ -165,7 +193,11 @@ const importData = async () => {
         email: 'info@circcric.cat',
         password: await hash('password'),
         location: 'Catalunya',
-        description: 'Circo familiar y pedagógico'
+        description: 'Circo familiar y pedagógico',
+        logo: {
+          filename: 'circ-cric_yjearo',
+          path: 'https://res.cloudinary.com/dgeyud92z/image/upload/v1778583946/circ-cric_yjearo.jpg'
+        }
       },
       {
         name: 'La Fura dels Baus',
@@ -173,7 +205,11 @@ const importData = async () => {
         email: 'info@fura.com',
         password: await hash('password'),
         location: 'Barcelona',
-        description: 'Teatro físico y espectáculos de gran formato'
+        description: 'Teatro físico y espectáculos de gran formato',
+        logo: {
+          filename: 'la-fura-dels-baus_qximpr',
+          path: 'https://res.cloudinary.com/dgeyud92z/image/upload/v1778583948/la-fura-dels-baus_qximpr.jpg'
+        }
       },
       {
         name: 'NoFit State Circus',
@@ -181,14 +217,33 @@ const importData = async () => {
         email: 'contact@nofitstate.org',
         password: await hash('password'),
         location: 'Valencia',
-        description: 'Circo contemporáneo experimental'
+        description: 'Circo contemporáneo experimental',
+        logo: {
+          filename: 'no-fit-state-circus_jx78ms',
+          path: 'https://res.cloudinary.com/dgeyud92z/image/upload/v1778583949/no-fit-state-circus_jx78ms.jpg'
+        }
       },
       {
         name: 'Gran Circo Mundial',
         username: 'gran-circo',
         email: 'info@grancirco.com',
         password: await hash('password'),
-        location: 'Madrid'
+        location: 'Madrid',
+        logo: {
+          filename: 'gran-circo_f0gc6k',
+          path: 'https://res.cloudinary.com/dgeyud92z/image/upload/v1778583948/gran-circo_f0gc6k.jpg'
+        }
+      },
+      {
+        name: 'Aerial Arts Studio',
+        username: 'aerial-arts',
+        email: 'info@aerialarts.com',
+        password: await hash('password'),
+        location: 'Valencia',
+        logo: {
+          filename: 'aerial-studio_uryo4r',
+          path: 'https://res.cloudinary.com/dgeyud92z/image/upload/v1778583945/aerial-studio_uryo4r.jpg'
+        }
       },
       {
         name: 'Circo del Sol Producciones',
@@ -203,13 +258,6 @@ const importData = async () => {
         email: 'contacto@eventos.com',
         password: await hash('password'),
         location: 'Sevilla'
-      },
-      {
-        name: 'Aerial Arts Studio',
-        username: 'aerial-arts',
-        email: 'info@aerialarts.com',
-        password: await hash('password'),
-        location: 'Valencia'
       },
       {
         name: 'Clown Factory',
@@ -295,6 +343,90 @@ const importData = async () => {
         contractType: 'freelance',
         skillsRequired: ['Teatro físico'],
         company: companies[9]._id
+      }
+    ])
+
+    // =========================
+    // 📝 POSTS REALISTAS
+    // =========================
+    const posts = await Post.insertMany([
+      {
+        author: users[2]._id, // Joan
+        authorModel: 'User',
+        content: 'Ensayando nueva rutina de fuego para la gira de verano 🔥',
+        likes: [
+          { refType: 'User', refId: users[4]._id },
+          { refType: 'User', refId: users[8]._id }
+        ],
+        comments: [
+          {
+            author: { refType: 'User', refId: users[3]._id },
+            comment: 'Brutal 🔥'
+          }
+        ]
+      },
+      {
+        author: users[3]._id, // Maria
+        authorModel: 'User',
+        content: 'Primera semana de entrenamiento intensivo en telas aéreas.',
+        likes: [
+          { refType: 'User', refId: users[2]._id }
+        ]
+      },
+      {
+        author: users[4]._id, // Carlos
+        authorModel: 'User',
+        content: 'Nuevo dúo acrobático preparado para festivales urbanos.',
+        comments: [
+          {
+            author: { refType: 'User', refId: users[5]._id },
+            comment: 'Quiero verlo en directo 👏'
+          }
+        ]
+      },
+      {
+        author: users[5]._id, // Lucia
+        authorModel: 'User',
+        content: 'El clown sigue siendo la mejor herramienta para conectar con el público.',
+        likes: [
+          { refType: 'Company', refId: companies[9]._id }
+        ]
+      },
+      {
+        author: users[6]._id, // David
+        authorModel: 'User',
+        content: 'Hoy conseguí mantener 7 pelotas durante 2 minutos seguidos 🎪'
+      },
+      {
+        author: users[7]._id, // Elena
+        authorModel: 'User',
+        content: 'Trabajando expresión corporal y danza contemporánea aplicada al circo.'
+      },
+      {
+        author: companies[0]._id, // Circ Raluy
+        authorModel: 'Company',
+        content: 'Abrimos casting para artistas de la temporada 2026 en Barcelona.'
+      },
+      {
+        author: companies[1]._id, // Cirque du Soleil España
+        authorModel: 'Company',
+        content: 'Gracias Madrid por llenar todas las funciones este fin de semana.'
+      },
+      {
+        author: companies[3]._id, // La Fura dels Baus
+        authorModel: 'Company',
+        content: 'Buscamos performers físicos para nuevo espectáculo inmersivo.',
+        comments: [
+          {
+            author: { refType: 'User', refId: users[4]._id },
+            comment: 'Enviado portfolio ✅'
+          }
+        ]
+      },
+      {
+        author: companies[8]._id, // Aerial Arts Studio
+        authorModel: 'Company',
+        content: 'Nueva formación intensiva de aro aéreo disponible este verano.'
       }
     ])
 
