@@ -151,16 +151,9 @@ export const accessChat = async (req, res) => {
     }
 
     let chat = await Chat.findOne({
-      $or: [
-        {
-          $and: [
-            { participants: { $elemMatch: { refType: me.refType, refId: me.refId } } },
-            { participants: { $elemMatch: { refType: target.refType, refId: target.refId } } }
-          ]
-        },
-        ...(me.refType === 'User' && target.refType === 'User'
-          ? [{ participants: { $all: [me.refId, target.refId] } }]
-          : [])
+      $and: [
+        { participants: { $elemMatch: { refType: me.refType, refId: me.refId } } },
+        { participants: { $elemMatch: { refType: target.refType, refId: target.refId } } }
       ]
     }).populate('lastMessage')
 
