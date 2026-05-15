@@ -36,7 +36,7 @@ const importData = async () => {
         bio: 'Administrador de Cirquera',
         avatar: {
           filename: 'avatar.jpg',
-          path: 'https://i.pravatar.cc/300?u=Albert'
+          path: 'https://i.pravatar.cc/150?img=70'
         }
       },
       {
@@ -46,7 +46,11 @@ const importData = async () => {
         username: 'victor-gomez',
         email: 'victor@cirquera.com',
         password: await hash('password'),
-        location: 'Barcelona'
+        location: 'Barcelona',
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/150?img=18'
+        }
       },
 
       // TALENT REALISTA
@@ -62,7 +66,7 @@ const importData = async () => {
         skills: ['Malabares', 'Fuego', 'Clown'],
         avatar: {
           filename: 'avatar.jpg',
-          path: 'https://i.pravatar.cc/300?u=Joan'
+          path: 'https://i.pravatar.cc/150?img=61'
         }
       },
       {
@@ -74,7 +78,11 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Valencia',
         bio: 'Artista aérea (telas, aro y trapecio)',
-        skills: ['Telas', 'Trapecio', 'Aro']
+        skills: ['Telas', 'Trapecio', 'Aro'],
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/150?img=36'
+        }
       },
       {
         role: 'talent',
@@ -88,7 +96,7 @@ const importData = async () => {
         skills: ['Acrobacia', 'Equilibrio'],
         avatar: {
           filename: 'avatar.jpg',
-          path: 'https://i.pravatar.cc/300?u=Carlos'
+          path: 'https://i.pravatar.cc/150?img=3'
         }
       },
       {
@@ -100,7 +108,11 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Sevilla',
         bio: 'Clown y actriz física',
-        skills: ['Clown', 'Teatro físico']
+        skills: ['Clown', 'Teatro físico'],
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/150?img=28'
+        }
       },
       {
         role: 'talent',
@@ -114,7 +126,7 @@ const importData = async () => {
         skills: ['Malabares', 'Diábolo'],
         avatar: {
           filename: 'avatar.jpg',
-          path: 'https://i.pravatar.cc/300?u=David'
+          path: 'https://i.pravatar.cc/150?img=64'
         }
       },
       {
@@ -126,7 +138,11 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Madrid',
         bio: 'Danza contemporánea aplicada al circo',
-        skills: ['Danza', 'Expresión corporal']
+        skills: ['Danza', 'Expresión corporal'],
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://i.pravatar.cc/150?img=24'
+        }
       },
       {
         role: 'talent',
@@ -137,11 +153,7 @@ const importData = async () => {
         password: await hash('password'),
         location: 'Valencia',
         bio: 'Técnico de rigging y estructuras aéreas',
-        skills: ['Rigging', 'Seguridad'],
-        avatar: {
-          filename: 'avatar.jpg',
-          path: 'https://i.pravatar.cc/300?u=Pablo'
-        }
+        skills: ['Rigging', 'Seguridad']
       },
       {
         role: 'talent',
@@ -153,6 +165,21 @@ const importData = async () => {
         location: 'Barcelona',
         bio: 'Especialista en aro aéreo',
         skills: ['Aro', 'Flexibilidad']
+      },
+      {
+        role: 'talent',
+        firstName: 'Felipe',
+        lastName: 'Rovira',
+        username: 'felipe-rovira',
+        email: 'felipe@circ.cat',
+        password: await hash('password'),
+        location: 'Barcelona',
+        bio: 'El mejor payaso que encontrarás',
+        skills: ['Clown'],
+        avatar: {
+          filename: 'avatar.jpg',
+          path: 'https://res.cloudinary.com/dgeyud92z/image/upload/ar_4:3,c_auto,g_north_west/felipe_hrbeqq.jpg'
+        }
       }
     ])
 
@@ -343,6 +370,71 @@ const importData = async () => {
         contractType: 'freelance',
         skillsRequired: ['Teatro físico'],
         company: companies[9]._id
+      },
+      // 5 más para Circ Raluy Legacy (companies[0])
+      {
+        title: 'Bailarín de circo',
+        description: 'Se busca bailarín con experiencia en espectáculos de circo',
+        location: 'Barcelona',
+        contractType: 'fijo',
+        skillsRequired: ['Danza', 'Expresión corporal'],
+        company: companies[0]._id
+      },
+      {
+        title: 'Contorsionista',
+        description: 'Artista contorsionista para temporada de giras',
+        location: 'Barcelona',
+        contractType: 'temporal',
+        skillsRequired: ['Contorsión', 'Flexibilidad'],
+        company: companies[0]._id
+      },
+      {
+        title: 'Titiritero profesional',
+        location: 'Barcelona',
+        contractType: 'freelance',
+        skillsRequired: ['Titiritería'],
+        company: companies[0]._id
+      },
+      {
+        title: 'Especialista en fuego',
+        description: 'Artista con experiencia en malabares con fuego',
+        location: 'Barcelona',
+        contractType: 'temporal',
+        skillsRequired: ['Fuego', 'Malabares'],
+        company: companies[0]._id
+      },
+      {
+        title: 'Director de escena',
+        description: 'Director experimentado para nuevas producciones',
+        location: 'Barcelona',
+        contractType: 'fijo',
+        skillsRequired: ['Dirección', 'Circo'],
+        company: companies[0]._id
+      },
+      // 3 más para Cirque du Soleil España (companies[1])
+      {
+        title: 'Acróbata de fuerza',
+        description: 'Acróbata con especialización en acrobacias de fuerza',
+        location: 'Madrid',
+        contractType: 'fijo',
+        skillsRequired: ['Acrobacia', 'Fuerza'],
+        company: companies[1]._id
+      },
+      {
+        title: 'Bailarín contemporáneo',
+        description: 'Bailarín con experiencia en producciones de gran formato',
+        location: 'Madrid',
+        contractType: 'temporal',
+        skillsRequired: ['Danza', 'Circo'],
+        company: companies[1]._id
+      },
+      {
+        title: 'Especialista en tramoya aérea',
+        description: 'Técnico especializado en estructuras y sistemas aéreos',
+        location: 'Madrid',
+        contractType: 'fijo',
+        skillsRequired: ['Rigging', 'Seguridad', 'Técnica'],
+        company: companies[1]._id
       }
     ])
 
@@ -351,9 +443,25 @@ const importData = async () => {
     // =========================
     const posts = await Post.insertMany([
       {
+        author: users[10]._id, // David
+        authorModel: 'User',
+        content: 'Hola a todos soy Felipe encantado de conocerlos, pronto será mi debut, deseadme suerte 🤡',
+        media:
+          {
+            type: 'image',
+            filename: 'david-malabares_mno345',
+            path: 'https://res.cloudinary.com/dgeyud92z/image/upload/ar_4:3,c_auto,g_north_west/felipe_hrbeqq.jpg'
+          }
+      },
+      {
         author: users[2]._id, // Joan
         authorModel: 'User',
         content: 'Ensayando nueva rutina de fuego para la gira de verano 🔥',
+        media: {
+          type: 'video',
+          filename: 'joan-fuego_abc123',
+          path: 'https://res.cloudinary.com/dgeyud92z/video/upload/v1778671754/fuego_xaxuwp.mp4'
+        },
         likes: [
           { refType: 'User', refId: users[4]._id },
           { refType: 'User', refId: users[8]._id }
@@ -369,6 +477,12 @@ const importData = async () => {
         author: users[3]._id, // Maria
         authorModel: 'User',
         content: 'Primera semana de entrenamiento intensivo en telas aéreas.',
+        media:
+          {
+            type: 'image',
+            filename: 'maria-telas_def456',
+            path: 'https://images.pexels.com/photos/37070994/pexels-photo-37070994.jpeg'
+          },
         likes: [
           { refType: 'User', refId: users[2]._id }
         ]
@@ -377,6 +491,12 @@ const importData = async () => {
         author: users[4]._id, // Carlos
         authorModel: 'User',
         content: 'Nuevo dúo acrobático preparado para festivales urbanos.',
+        media:
+          {
+            type: 'image',
+            filename: 'carlos-acro_ghi789',
+            path: 'https://images.pexels.com/photos/6809713/pexels-photo-6809713.jpeg'
+          },
         comments: [
           {
             author: { refType: 'User', refId: users[5]._id },
@@ -388,6 +508,12 @@ const importData = async () => {
         author: users[5]._id, // Lucia
         authorModel: 'User',
         content: 'El clown sigue siendo la mejor herramienta para conectar con el público.',
+        media:
+          {
+            type: 'image',
+            filename: 'lucia-clown_jkl012',
+            path: 'https://images.pexels.com/photos/36199107/pexels-photo-36199107.jpeg'
+          },
         likes: [
           { refType: 'Company', refId: companies[9]._id }
         ]
@@ -395,38 +521,43 @@ const importData = async () => {
       {
         author: users[6]._id, // David
         authorModel: 'User',
-        content: 'Hoy conseguí mantener 7 pelotas durante 2 minutos seguidos 🎪'
-      },
-      {
-        author: users[7]._id, // Elena
-        authorModel: 'User',
-        content: 'Trabajando expresión corporal y danza contemporánea aplicada al circo.'
-      },
-      {
-        author: companies[0]._id, // Circ Raluy
-        authorModel: 'Company',
-        content: 'Abrimos casting para artistas de la temporada 2026 en Barcelona.'
+        content: 'Hoy conseguí mantener 7 pelotas durante 2 minutos seguidos 🎪',
+        media:
+          {
+            type: 'video',
+            filename: 'david-malabares_mno345',
+            path: 'https://res.cloudinary.com/dgeyud92z/video/upload/v1778672855/pelotas_ajdgxu.mp4'
+          }
+
       },
       {
         author: companies[1]._id, // Cirque du Soleil España
         authorModel: 'Company',
-        content: 'Gracias Madrid por llenar todas las funciones este fin de semana.'
+        content: 'Gracias Madrid por llenar todas las funciones este fin de semana.',
+        media:
+          {
+            type: 'image',
+            filename: 'cirque-madrid_vwx234',
+            path: 'https://images.pexels.com/photos/19045706/pexels-photo-19045706.jpeg'
+          }
+
       },
       {
         author: companies[3]._id, // La Fura dels Baus
         authorModel: 'Company',
         content: 'Buscamos performers físicos para nuevo espectáculo inmersivo.',
+        media:
+          {
+            type: 'image',
+            filename: 'fura-inmersivo_yza567',
+            path: 'https://images.pexels.com/photos/11657969/pexels-photo-11657969.jpeg'
+          },
         comments: [
           {
             author: { refType: 'User', refId: users[4]._id },
             comment: 'Enviado portfolio ✅'
           }
         ]
-      },
-      {
-        author: companies[8]._id, // Aerial Arts Studio
-        authorModel: 'Company',
-        content: 'Nueva formación intensiva de aro aéreo disponible este verano.'
       }
     ])
 
